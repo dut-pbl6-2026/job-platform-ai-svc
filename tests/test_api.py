@@ -4,7 +4,10 @@ from fastapi.testclient import TestClient
 
 from app.errors import JobNotFound
 from app.main import create_app
+from app.parsing.ocr import ocr_available
 from tests.conftest import CV_TEXT, make_docx, make_image_pdf, make_text_pdf
+
+needs_ocr = pytest.mark.skipif(not ocr_available(), reason="tesseract not installed")
 
 JOB_ID = "11111111-1111-1111-1111-111111111111"
 PY_JOB = {"id": JOB_ID, "title": "Python Backend Developer", "updatedAt": "2026-01-01",
@@ -71,6 +74,7 @@ def test_response_shape_and_meta(client):
     assert "@" not in str(j) and "phone" not in j  # no contact data in evidence
 
 
+@needs_ocr
 def test_scanned_cv_scores_like_text_cv(client):
     a = post(client, make_text_pdf(CV_TEXT)).json()["overall_score"]
     b = post(client, make_image_pdf(CV_TEXT)).json()
