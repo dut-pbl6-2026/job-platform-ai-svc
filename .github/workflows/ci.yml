@@ -1,8 +1,12 @@
 name: ci
 on: { push: { branches: [main] }, pull_request: { branches: [main] } }
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: echo "ci placeholder"
+      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-eng tesseract-ocr-vie
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --frozen
+      - run: uv run ruff check app tests eval scripts
+      - run: uv run pytest -q

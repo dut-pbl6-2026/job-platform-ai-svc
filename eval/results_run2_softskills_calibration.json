@@ -1,0 +1,136 @@
+{
+ "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+ "n_pairs": 240,
+ "n_train": 160,
+ "n_test": 80,
+ "weights": {
+  "skills": 0.486,
+  "semantic": 0.435,
+  "experience": 0.078,
+  "education": 0.0
+ },
+ "calibration": {
+  "same": [
+   0.401,
+   0.671
+  ],
+  "cross": [
+   0.457,
+   0.57
+  ]
+ },
+ "agreement": {
+  "spearman": 0.947038599158006,
+  "weighted_kappa": 0.9467876662885428,
+  "exact": 0.8208333333333333,
+  "within1": 1.0
+ },
+ "results": {
+  "hybrid (fitted)": {
+   "n": 80,
+   "spearman": 0.781473146011358,
+   "kendall": 0.6321309937108339,
+   "pearson": 0.811657309649084,
+   "auc_relevant": 0.9512055109070034,
+   "ndcg5": 0.870855889846562,
+   "spearman_ci95": [
+    0.6582124729180536,
+    0.8492571465644518
+   ]
+  },
+  "hybrid (prior weights, uncalibrated defaults)": {
+   "n": 80,
+   "spearman": 0.6774878429430788,
+   "kendall": 0.5186517023089249,
+   "pearson": 0.7131034870654005,
+   "auc_relevant": 0.9305396096440873,
+   "ndcg5": 0.8663020676136759,
+   "spearman_ci95": [
+    0.5799081584226363,
+    0.7842369855199703
+   ]
+  },
+  "skills only": {
+   "n": 80,
+   "spearman": 0.7493227104181118,
+   "kendall": 0.6164913718376842,
+   "pearson": 0.7417866765338648,
+   "auc_relevant": 0.9029850746268657,
+   "ndcg5": 0.8504693015612459,
+   "spearman_ci95": [
+    0.6678214948195839,
+    0.8198830228382139
+   ]
+  },
+  "embedding only": {
+   "n": 80,
+   "spearman": 0.5944729726458157,
+   "kendall": 0.4777313333776174,
+   "pearson": 0.7121228271793055,
+   "auc_relevant": 0.9035591274397244,
+   "ndcg5": 0.819486299287105,
+   "spearman_ci95": [
+    0.43848709249959766,
+    0.7061117587194309
+   ]
+  },
+  "embedding only (raw cosine)": {
+   "n": 80,
+   "spearman": 0.592958584140603,
+   "kendall": 0.43713696726482376,
+   "pearson": 0.662393631757835,
+   "auc_relevant": 0.9322617680826636,
+   "ndcg5": 0.8347054347994999,
+   "spearman_ci95": [
+    0.4334863776432444,
+    0.7033788302964172
+   ]
+  },
+  "TF-IDF cosine": {
+   "n": 80,
+   "spearman": 0.36842320821817603,
+   "kendall": 0.29486023974946873,
+   "pearson": 0.4819234626958457,
+   "auc_relevant": 0.6050516647531573,
+   "ndcg5": 0.7967271910438527,
+   "spearman_ci95": [
+    0.08592609745087858,
+    0.7453892655701977
+   ]
+  },
+  "hybrid without negation handling": {
+   "n": 80,
+   "spearman": 0.7863065770090804,
+   "kendall": 0.636319850663444,
+   "pearson": 0.8156389296057407,
+   "auc_relevant": 0.9494833524684271,
+   "ndcg5": 0.8703157364102234,
+   "spearman_ci95": [
+    0.6604408083703805,
+    0.8513153959478011
+   ]
+  }
+ },
+ "train_spearman_fitted": 0.763590049063443,
+ "vs_annotator": {
+  "A": 0.7596849070110613,
+  "B": 0.7918793926508344
+ },
+ "mean_score_by_label": {
+  "0": 4.8,
+  "1": 14.9,
+  "2": 31.9,
+  "3": 64.4,
+  "4": 64.0
+ },
+ "per_job_spearman": {
+  "accountant": 0.78,
+  "bi-analyst": 0.74,
+  "digital-marketing": 0.27,
+  "graphic-designer": 0.49,
+  "java-backend": 0.92,
+  "vi-ke-toan": 0.73,
+  "vi-ky-su-dien": 0.85,
+  "vi-python-backend": 0.93
+ }
+}

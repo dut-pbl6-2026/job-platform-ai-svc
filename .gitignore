@@ -6,3 +6,13 @@ obj/
 .env.bak.*
 mise.toml.local
 INFISICAL_TOKEN
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+models/
+eval/cache/
+eval/batches/

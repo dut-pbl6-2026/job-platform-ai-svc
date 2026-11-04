@@ -1,0 +1,624 @@
+[
+ {
+  "id": "00000000-0000-0000-0000-000000000001",
+  "slug": "python-backend",
+  "title": "Python Backend Developer",
+  "experienceLevel": "Mid",
+  "categoryName": "IT",
+  "requirements": "- At least 3 years of professional experience with Python\n- Solid experience with Django or Flask and building REST APIs\n- Experience with PostgreSQL or MySQL, including query optimisation\n- Hands-on experience with Docker and Git\n- Bachelor's degree in Computer Science or a related field\n- Experience with AWS or other cloud platforms is a plus",
+  "description": "We are looking for a backend developer to design, build and maintain the APIs behind our e-commerce platform. You will work with a small team, review code, write tests and take part in on-call rotations.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "en",
+  "_split": "train",
+  "_pool": {
+   "relevant": [
+    "python developer",
+    "pythondeveloper"
+   ],
+   "adjacent": [
+    "data science",
+    "database",
+    "sql",
+    "javadeveloper",
+    "devops",
+    "information technology",
+    "it",
+    "etl"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000002",
+  "slug": "react-frontend",
+  "title": "React Frontend Developer",
+  "experienceLevel": "Mid",
+  "categoryName": "IT",
+  "requirements": "- 2+ years of experience building web applications with React\n- Strong JavaScript (ES6+), HTML5 and CSS3; TypeScript experience preferred\n- Experience consuming REST APIs and managing state (Redux or similar)\n- Familiarity with Git and agile teams\n- Knowledge of testing frameworks such as Jest is a plus",
+  "description": "Join our product team to build responsive dashboards and customer-facing web apps. You will turn designs into clean, accessible components and collaborate with designers and backend engineers.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "en",
+  "_split": "train",
+  "_pool": {
+   "relevant": [
+    "react developer",
+    "reactdeveloper"
+   ],
+   "adjacent": [
+    "web designing",
+    "designer",
+    "information technology",
+    "it",
+    "javadeveloper",
+    "python developer"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000003",
+  "slug": "java-backend",
+  "title": "Java Backend Developer",
+  "experienceLevel": "Mid",
+  "categoryName": "IT",
+  "requirements": "- 3 years of experience in Java development\n- Experience with Spring Boot and microservices architecture\n- Good knowledge of MySQL or Oracle and writing SQL\n- Understanding of REST APIs and object-oriented design\n- Experience with Docker and CI/CD is an advantage",
+  "description": "Develop and maintain high-volume backend services for a fintech product. You will own features end to end, from design to production support.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "en",
+  "_split": "test",
+  "_pool": {
+   "relevant": [
+    "javadeveloper",
+    "java developer"
+   ],
+   "adjacent": [
+    "python developer",
+    "sql",
+    "database",
+    "information technology",
+    "it",
+    "sap developer",
+    "etl"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000004",
+  "slug": "devops",
+  "title": "DevOps Engineer",
+  "experienceLevel": "Senior",
+  "categoryName": "IT",
+  "requirements": "- 4+ years of experience in DevOps or site reliability roles\n- Strong experience with AWS or Azure\n- Hands-on with Docker and Kubernetes\n- Experience building CI/CD pipelines (Jenkins, GitLab CI or GitHub Actions)\n- Infrastructure as code with Terraform or Ansible\n- Strong Linux administration and scripting (Bash or Python)",
+  "description": "Own our cloud infrastructure and delivery pipelines. You will automate deployments, improve reliability and monitoring, and support engineering teams.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "en",
+  "_split": "train",
+  "_pool": {
+   "relevant": [
+    "devops"
+   ],
+   "adjacent": [
+    "network security",
+    "information technology",
+    "it",
+    "database",
+    "python developer"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000005",
+  "slug": "data-scientist",
+  "title": "Data Scientist",
+  "experienceLevel": "Mid",
+  "categoryName": "IT",
+  "requirements": "- 2 years of experience applying machine learning to real problems\n- Proficiency in Python with pandas, NumPy and scikit-learn; TensorFlow or PyTorch experience\n- Strong SQL skills and a solid foundation in statistics\n- Master's degree in a quantitative field is preferred\n- Ability to communicate findings to non-technical stakeholders",
+  "description": "Build predictive models for customer churn and demand forecasting, run experiments and present insights to product and operations teams.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "en",
+  "_split": "train",
+  "_pool": {
+   "relevant": [
+    "data science",
+    "datascience"
+   ],
+   "adjacent": [
+    "python developer",
+    "sql",
+    "database",
+    "etl",
+    "businessanalyst",
+    "finance"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000006",
+  "slug": "bi-analyst",
+  "title": "Business Intelligence Analyst",
+  "experienceLevel": "Mid",
+  "categoryName": "IT",
+  "requirements": "- 2+ years of experience in data analysis or business intelligence\n- Advanced SQL and Excel skills\n- Experience with Power BI or Tableau for dashboards\n- Understanding of ETL concepts and data warehousing\n- Strong analytical and communication skills",
+  "description": "Create dashboards and reports that help management track sales and operations KPIs. You will clean and model data from several sources and answer ad-hoc questions.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "en",
+  "_split": "test",
+  "_pool": {
+   "relevant": [
+    "sql",
+    "data science",
+    "etl",
+    "database",
+    "businessanalyst"
+   ],
+   "adjacent": [
+    "finance",
+    "accountant",
+    "python developer",
+    "information technology"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000007",
+  "slug": "qa-engineer",
+  "title": "QA Test Engineer",
+  "experienceLevel": "Mid",
+  "categoryName": "IT",
+  "requirements": "- 2 years of experience in software testing\n- Ability to write test plans and test cases; experience with manual and automation testing\n- Knowledge of Selenium or similar automation tools\n- Experience with Jira and basic SQL\n- Good understanding of the software development life cycle",
+  "description": "Ensure the quality of our web and mobile releases. You will design test cases, run regression tests, automate critical flows and report defects.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "en",
+  "_split": "train",
+  "_pool": {
+   "relevant": [
+    "testing"
+   ],
+   "adjacent": [
+    "information technology",
+    "it",
+    "javadeveloper",
+    "python developer",
+    "sql",
+    "businessanalyst"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000008",
+  "slug": "sap-consultant",
+  "title": "SAP Functional Consultant",
+  "experienceLevel": "Senior",
+  "categoryName": "IT",
+  "requirements": "- 4+ years of SAP implementation or support experience (FICO or MM modules)\n- Experience with configuration, testing and end-user training\n- Ability to gather requirements from business users and write functional specifications\n- Bachelor's degree in Finance, Accounting or IT\n- Knowledge of SAP S/4HANA is a plus",
+  "description": "Support finance and procurement processes in SAP for a manufacturing group. You will run workshops, configure the system and coordinate with technical teams.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "en",
+  "_split": "train",
+  "_pool": {
+   "relevant": [
+    "sap developer",
+    "sapdeveloper",
+    "sap"
+   ],
+   "adjacent": [
+    "finance",
+    "accountant",
+    "businessanalyst",
+    "consultant",
+    "information technology"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000009",
+  "slug": "netsec",
+  "title": "Network Security Engineer",
+  "experienceLevel": "Mid",
+  "categoryName": "IT",
+  "requirements": "- 3 years of experience in network or security engineering\n- Hands-on experience with firewalls, VPN and IDS/IPS\n- Knowledge of TCP/IP, routing and switching; CCNA or equivalent certification\n- Experience with SIEM tools and incident response\n- Bachelor's degree in IT or related field",
+  "description": "Protect our corporate network. You will configure and monitor security devices, respond to incidents and run vulnerability assessments.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "en",
+  "_split": "train",
+  "_pool": {
+   "relevant": [
+    "network security",
+    "networksecurity",
+    "nse"
+   ],
+   "adjacent": [
+    "information technology",
+    "it",
+    "devops",
+    "database"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000010",
+  "slug": "accountant",
+  "title": "Accountant",
+  "experienceLevel": "Mid",
+  "categoryName": "Finance",
+  "requirements": "- Bachelor's degree in Accounting or Finance\n- At least 3 years of experience in general accounting\n- Solid knowledge of accounts payable, accounts receivable, reconciliations and month-end closing\n- Experience with tax filing and IFRS or GAAP\n- Proficient in Excel; experience with QuickBooks or similar software\n- Attention to detail",
+  "description": "Maintain the general ledger, prepare monthly financial statements and support the annual audit for a trading company.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "en",
+  "_split": "test",
+  "_pool": {
+   "relevant": [
+    "accountant",
+    "finance"
+   ],
+   "adjacent": [
+    "banking",
+    "businessanalyst",
+    "management",
+    "operations manager",
+    "sales",
+    "hr"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000011",
+  "slug": "hr-specialist",
+  "title": "HR Specialist",
+  "experienceLevel": "Mid",
+  "categoryName": "Human Resources",
+  "requirements": "- 2 years of experience in human resources\n- Experience with full-cycle recruitment and onboarding\n- Knowledge of payroll, labour law and employee relations\n- Excellent communication and interpersonal skills\n- Bachelor's degree in HR, Business or related field",
+  "description": "Support hiring, onboarding and employee engagement for a growing company of 300 people.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "en",
+  "_split": "train",
+  "_pool": {
+   "relevant": [
+    "human resources",
+    "hr"
+   ],
+   "adjacent": [
+    "management",
+    "consultant",
+    "operations manager",
+    "sales",
+    "education",
+    "accountant"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000012",
+  "slug": "sales-exec",
+  "title": "B2B Sales Executive",
+  "experienceLevel": "Mid",
+  "categoryName": "Sales",
+  "requirements": "- 2 years of experience in B2B sales or business development\n- Proven record of meeting sales targets\n- Skilled in lead generation, negotiation and closing deals\n- Experience with a CRM system\n- Excellent communication and presentation skills",
+  "description": "Develop new enterprise clients, manage the sales pipeline and prepare proposals for software solutions.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "en",
+  "_split": "train",
+  "_pool": {
+   "relevant": [
+    "sales"
+   ],
+   "adjacent": [
+    "management",
+    "operations manager",
+    "bpo",
+    "digital",
+    "consultant",
+    "hr"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000013",
+  "slug": "digital-marketing",
+  "title": "Digital Marketing Specialist",
+  "experienceLevel": "Mid",
+  "categoryName": "Marketing",
+  "requirements": "- 2+ years of experience in digital marketing\n- Hands-on experience with SEO, Google Ads and social media campaigns\n- Familiar with Google Analytics and reporting on campaign performance\n- Good copywriting skills\n- Creativity and data-driven mindset",
+  "description": "Plan and run online campaigns to grow traffic and leads, and report results to the marketing manager.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "en",
+  "_split": "test",
+  "_pool": {
+   "relevant": [
+    "digital media",
+    "digital",
+    "arts"
+   ],
+   "adjacent": [
+    "sales",
+    "designer",
+    "management",
+    "consultant",
+    "bpo"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000014",
+  "slug": "civil-engineer",
+  "title": "Civil Engineer",
+  "experienceLevel": "Mid",
+  "categoryName": "Construction",
+  "requirements": "- Bachelor's degree in Civil Engineering\n- 3 years of experience in construction projects, including site supervision\n- Proficient in AutoCAD; knowledge of structural design and BOQ preparation\n- Understanding of safety and quality standards\n- Ability to coordinate with contractors",
+  "description": "Supervise building construction projects, review drawings, track progress and ensure quality and safety compliance on site.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "en",
+  "_split": "train",
+  "_pool": {
+   "relevant": [
+    "civilengineer",
+    "civil engineer"
+   ],
+   "adjacent": [
+    "architect",
+    "mechanicalengineer",
+    "mechanical engineer",
+    "electricalengineer",
+    "electrical engineering",
+    "management"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000015",
+  "slug": "graphic-designer",
+  "title": "Graphic Designer",
+  "experienceLevel": "Mid",
+  "categoryName": "Design",
+  "requirements": "- 2 years of experience in graphic design\n- Proficiency in Adobe Photoshop, Illustrator and InDesign\n- Strong sense of typography, colour and layout\n- Portfolio demonstrating branding and marketing materials\n- Ability to work to deadlines",
+  "description": "Create visual assets for brand campaigns, social media and print, working closely with the marketing team.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "en",
+  "_split": "test",
+  "_pool": {
+   "relevant": [
+    "designer",
+    "designing",
+    "arts",
+    "web designing"
+   ],
+   "adjacent": [
+    "digital media",
+    "digital",
+    "apparel",
+    "architect",
+    "react developer"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000016",
+  "slug": "project-manager",
+  "title": "Project Manager",
+  "experienceLevel": "Senior",
+  "categoryName": "Management",
+  "requirements": "- 5+ years of experience managing projects\n- PMP or PRINCE2 certification is preferred\n- Strong knowledge of agile and waterfall methodologies\n- Experience with stakeholder management, budgeting and risk management\n- Excellent leadership and communication skills",
+  "description": "Lead cross-functional teams to deliver software and process-improvement projects on time and on budget.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "en",
+  "_split": "train",
+  "_pool": {
+   "relevant": [
+    "pmo",
+    "management",
+    "operations manager",
+    "operationmanager"
+   ],
+   "adjacent": [
+    "consultant",
+    "businessanalyst",
+    "information technology",
+    "hr",
+    "sales"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000017",
+  "slug": "vi-python-backend",
+  "title": "Lập trình viên Backend Python",
+  "experienceLevel": "Mid",
+  "categoryName": "CNTT",
+  "requirements": "- Có ít nhất 2 năm kinh nghiệm lập trình Python\n- Thành thạo Django hoặc Flask, xây dựng REST API\n- Có kinh nghiệm với PostgreSQL hoặc MySQL\n- Biết sử dụng Docker và Git\n- Tốt nghiệp đại học chuyên ngành Công nghệ thông tin hoặc liên quan\n- Ưu tiên ứng viên có kinh nghiệm AWS",
+  "description": "Tham gia phát triển và bảo trì các dịch vụ backend cho hệ thống thương mại điện tử, viết kiểm thử và phối hợp với nhóm frontend.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "vi",
+  "_split": "test",
+  "_pool": {
+   "relevant": [
+    "python developer",
+    "pythondeveloper"
+   ],
+   "adjacent": [
+    "data science",
+    "database",
+    "sql",
+    "javadeveloper",
+    "devops",
+    "information technology",
+    "it"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000018",
+  "slug": "vi-reactjs",
+  "title": "Lập trình viên ReactJS",
+  "experienceLevel": "Junior",
+  "categoryName": "CNTT",
+  "requirements": "- Có ít nhất 1 năm kinh nghiệm với ReactJS\n- Nắm vững JavaScript, HTML, CSS\n- Có kinh nghiệm gọi REST API, quản lý state với Redux\n- Biết sử dụng Git\n- Ưu tiên biết TypeScript",
+  "description": "Xây dựng giao diện web cho các sản phẩm của công ty, đảm bảo giao diện đẹp, tương thích nhiều thiết bị.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "vi",
+  "_split": "train",
+  "_pool": {
+   "relevant": [
+    "react developer",
+    "reactdeveloper"
+   ],
+   "adjacent": [
+    "web designing",
+    "designer",
+    "information technology",
+    "it",
+    "javadeveloper"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000019",
+  "slug": "vi-ke-toan",
+  "title": "Kế toán tổng hợp",
+  "experienceLevel": "Mid",
+  "categoryName": "Kế toán",
+  "requirements": "- Tốt nghiệp đại học chuyên ngành Kế toán, Tài chính\n- Có ít nhất 3 năm kinh nghiệm kế toán tổng hợp\n- Thành thạo nghiệp vụ kế toán công nợ, thuế, lập báo cáo tài chính\n- Sử dụng thành thạo Excel và phần mềm kế toán\n- Cẩn thận, trung thực",
+  "description": "Hạch toán các nghiệp vụ phát sinh, lập báo cáo thuế và báo cáo tài chính hàng tháng, phối hợp với kiểm toán.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "vi",
+  "_split": "test",
+  "_pool": {
+   "relevant": [
+    "accountant",
+    "finance"
+   ],
+   "adjacent": [
+    "banking",
+    "businessanalyst",
+    "management",
+    "operations manager",
+    "sales"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000020",
+  "slug": "vi-nhan-su",
+  "title": "Chuyên viên Nhân sự",
+  "experienceLevel": "Mid",
+  "categoryName": "Nhân sự",
+  "requirements": "- Có ít nhất 2 năm kinh nghiệm nhân sự\n- Có kinh nghiệm tuyển dụng và onboarding nhân viên mới\n- Hiểu biết về luật lao động, tiền lương và bảo hiểm\n- Kỹ năng giao tiếp tốt\n- Tốt nghiệp đại học",
+  "description": "Phụ trách tuyển dụng, hồ sơ nhân sự, chấm công tính lương và các hoạt động gắn kết nhân viên.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "vi",
+  "_split": "train",
+  "_pool": {
+   "relevant": [
+    "human resources",
+    "hr"
+   ],
+   "adjacent": [
+    "management",
+    "consultant",
+    "operations manager",
+    "sales",
+    "education"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000021",
+  "slug": "vi-kinh-doanh",
+  "title": "Nhân viên Kinh doanh",
+  "experienceLevel": "Mid",
+  "categoryName": "Kinh doanh",
+  "requirements": "- Có ít nhất 1 năm kinh nghiệm bán hàng hoặc phát triển kinh doanh\n- Kỹ năng đàm phán, thuyết phục và chăm sóc khách hàng tốt\n- Có khả năng tìm kiếm khách hàng mới và đạt chỉ tiêu doanh số\n- Sử dụng được CRM và Excel\n- Chủ động, chịu được áp lực",
+  "description": "Tìm kiếm khách hàng doanh nghiệp, tư vấn giải pháp và duy trì mối quan hệ lâu dài với khách hàng.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "vi",
+  "_split": "train",
+  "_pool": {
+   "relevant": [
+    "sales"
+   ],
+   "adjacent": [
+    "management",
+    "operations manager",
+    "bpo",
+    "digital",
+    "consultant",
+    "hr"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000022",
+  "slug": "vi-ky-su-dien",
+  "title": "Kỹ sư Điện",
+  "experienceLevel": "Mid",
+  "categoryName": "Kỹ thuật",
+  "requirements": "- Tốt nghiệp đại học chuyên ngành Điện hoặc Điện tử\n- Có ít nhất 2 năm kinh nghiệm thiết kế hoặc bảo trì hệ thống điện\n- Sử dụng thành thạo AutoCAD, đọc hiểu bản vẽ kỹ thuật\n- Có kiến thức về PLC là lợi thế\n- Có tinh thần trách nhiệm, sẵn sàng đi công trình",
+  "description": "Thiết kế, lắp đặt và bảo trì hệ thống điện công nghiệp, giám sát thi công và đảm bảo an toàn.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "vi",
+  "_split": "test",
+  "_pool": {
+   "relevant": [
+    "electricalengineer",
+    "electrical engineering"
+   ],
+   "adjacent": [
+    "mechanicalengineer",
+    "mechanical engineer",
+    "civilengineer",
+    "civil engineer",
+    "automobile",
+    "architect"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000023",
+  "slug": "vi-giao-vien",
+  "title": "Giáo viên",
+  "experienceLevel": "Mid",
+  "categoryName": "Giáo dục",
+  "requirements": "- Tốt nghiệp đại học sư phạm hoặc chuyên ngành phù hợp\n- Có ít nhất 2 năm kinh nghiệm giảng dạy\n- Biết lập kế hoạch bài giảng và quản lý lớp học\n- Kỹ năng giao tiếp và truyền đạt tốt\n- Sử dụng được công nghệ trong dạy học",
+  "description": "Giảng dạy, xây dựng giáo án, đánh giá học sinh và phối hợp với phụ huynh.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "vi",
+  "_split": "train",
+  "_pool": {
+   "relevant": [
+    "education"
+   ],
+   "adjacent": [
+    "human resources",
+    "hr",
+    "public",
+    "health_fitness",
+    "consultant",
+    "arts"
+   ]
+  }
+ },
+ {
+  "id": "00000000-0000-0000-0000-000000000024",
+  "slug": "vi-ba",
+  "title": "Chuyên viên Phân tích Nghiệp vụ (BA)",
+  "experienceLevel": "Mid",
+  "categoryName": "CNTT",
+  "requirements": "- Có ít nhất 2 năm kinh nghiệm phân tích nghiệp vụ\n- Có kinh nghiệm thu thập yêu cầu, viết tài liệu BRD, user story\n- Biết SQL cơ bản và vẽ quy trình nghiệp vụ\n- Kỹ năng giao tiếp tốt\n- Có kinh nghiệm làm việc theo Agile/Scrum là lợi thế",
+  "description": "Làm việc với khách hàng và đội phát triển để xác định yêu cầu, viết tài liệu và hỗ trợ kiểm thử nghiệm thu.",
+  "updatedAt": "2026-10-01T00:00:00Z",
+  "_lang": "vi",
+  "_split": "train",
+  "_pool": {
+   "relevant": [
+    "businessanalyst",
+    "business analyst"
+   ],
+   "adjacent": [
+    "pmo",
+    "consultant",
+    "information technology",
+    "it",
+    "sql",
+    "testing",
+    "finance"
+   ]
+  }
+ }
+]

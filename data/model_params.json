@@ -1,0 +1,26 @@
+{
+ "version": "fitted-2026-11-02",
+ "weights": {
+  "skills": 0.481,
+  "semantic": 0.433,
+  "experience": 0.087,
+  "education": 0.0
+ },
+ "calibration": {
+  "same": {
+   "lo": 0.401,
+   "hi": 0.671
+  },
+  "cross": {
+   "lo": 0.457,
+   "hi": 0.57
+  }
+ },
+ "title_weight": 0.3,
+ "fitted_on": {
+  "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+  "train_pairs": 160,
+  "train_jobs": 16,
+  "test_spearman": 0.7869303339630557
+ }
+}
