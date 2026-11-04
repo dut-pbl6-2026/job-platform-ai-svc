@@ -13,7 +13,7 @@ Python FastAPI — part of **Vietnam Job Platform** (`pbl6`) under [`dut-pbl6-20
 ```bash
 # prerequisites: Python 3.12 + uv (mise install), tesseract-ocr with eng+vie  (apt install tesseract-ocr tesseract-ocr-eng tesseract-ocr-vie)
 mise run install      # uv sync
-mise run models       # one-off: downloads the ONNX embedding model (235 MB) into ./models
+mise run models       # one-off: downloads the ONNX embedding model (paraphrase-multilingual-mpnet-base-v2, 860 MB) into ./models
 mise run sync-env     # copies the shared .env (JWT secret etc.)
 JOB_SERVICE_URL=http://localhost:5002 mise run dev   # http://localhost:6000
 
@@ -34,12 +34,13 @@ In Docker: `docker compose up -d --build ai gateway` from `job-platform-infra` (
 app/parsing    PDF (text layer + hidden-text filter, per-page OCR fallback), DOCX, content-based type detection
 app/nlp        normalise (NFC, fold), sections, skill taxonomy + sentence-scoped negation + "A or B" groups, years, education
 app/scoring    specs (CV/job views), scorer (explainable components), template suggestions
-app/embed.py   ONNX embeddings (fastembed) + deterministic hashing fallback for tests
-data/          skills.yaml (taxonomy), model_params.json (fitted weights + calibration)
-eval/          jobs, pairs, blind labels (A/B), run.py (fit + evaluate), REPORT.md
-tests/         66+ unit/API/robustness tests (no model download needed)
+app/embed.py   ONNX embeddings (fastembed, multilingual mpnet-base-v2) + deterministic hashing fallback for tests
+data/          skills.yaml (taxonomy), model_params.json (fitted weights + calibration + score map)
+eval/          jobs, 5 760-pair label grid, blind labels (A/B + Haiku + Sonnet), run.py / fit_grid.py, REPORT.md
+tests/         79+ unit/API/robustness tests (no model download needed)
 ```
 
 ## Develop
 
-`mise run verify` (ruff + pytest). `mise run eval` re-fits weights on the train jobs and rewrites `eval/results_*.json` and `data/model_params.json`.
+`mise run verify` (ruff + pytest). `mise run eval` fits the weights on the train jobs and rewrites `eval/results_*.json`.
+`mise run eval-grid` fits on the full 5 760-pair label grid (`eval/labels/grid`) and writes `data/model_params.json`; see `eval/REPORT.md`.

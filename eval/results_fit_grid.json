@@ -1,0 +1,589 @@
+{
+ "model": "sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+ "shipped_weights": {
+  "skills": 0.494,
+  "semantic": 0.49,
+  "experience": 0.01,
+  "education": 0.006
+ },
+ "cosine_calibration": {
+  "same": [
+   0.404,
+   0.698
+  ],
+  "cross": [
+   0.47,
+   0.631
+  ]
+ },
+ "weights": {
+  "grid": {
+   "skills": 0.494,
+   "semantic": 0.49,
+   "experience": 0.01,
+   "education": 0.006
+  },
+  "ab": {
+   "skills": 0.49,
+   "semantic": 0.412,
+   "experience": 0.05,
+   "education": 0.049
+  },
+  "grid+ab": {
+   "skills": 0.485,
+   "semantic": 0.497,
+   "experience": 0.014,
+   "education": 0.004
+  }
+ },
+ "heldout": {
+  "shipped": {
+   "vs_grid_labels": {
+    "n": 1920,
+    "spearman": 0.6216,
+    "mae_vs_reference_scale": 10.61,
+    "mean_score_by_label": {
+     "0": 2.5,
+     "1": 12.1,
+     "2": 32.6,
+     "3": 54.9,
+     "4": 78.9
+    }
+   },
+   "vs_AB_consensus": {
+    "n": 80,
+    "spearman": 0.7894,
+    "mae_vs_reference_scale": 11.86,
+    "mean_score_by_label": {
+     "0": 4.5,
+     "1": 16.2,
+     "2": 56.9,
+     "3": 80.7,
+     "4": 65.4
+    }
+   },
+   "vs_sonnet": {
+    "n": 110,
+    "spearman": 0.6701,
+    "mae_vs_reference_scale": 16.68,
+    "mean_score_by_label": {
+     "0": 12.6,
+     "1": 26.8,
+     "2": 34.1,
+     "3": 61.2,
+     "4": 82.7
+    }
+   },
+   "train_vs_grid": {
+    "n": 3840,
+    "spearman": 0.5861,
+    "mae_vs_reference_scale": 11.81,
+    "mean_score_by_label": {
+     "0": 5.0,
+     "1": 16.4,
+     "2": 38.0,
+     "3": 55.9,
+     "4": 75.5
+    }
+   }
+  },
+  "grid": {
+   "vs_grid_labels": {
+    "n": 1920,
+    "spearman": 0.6216,
+    "mae_vs_reference_scale": 10.61,
+    "mean_score_by_label": {
+     "0": 2.5,
+     "1": 12.1,
+     "2": 32.6,
+     "3": 54.9,
+     "4": 78.9
+    }
+   },
+   "vs_AB_consensus": {
+    "n": 80,
+    "spearman": 0.7894,
+    "mae_vs_reference_scale": 11.86,
+    "mean_score_by_label": {
+     "0": 4.5,
+     "1": 16.2,
+     "2": 56.9,
+     "3": 80.7,
+     "4": 65.4
+    }
+   },
+   "vs_sonnet": {
+    "n": 110,
+    "spearman": 0.6701,
+    "mae_vs_reference_scale": 16.68,
+    "mean_score_by_label": {
+     "0": 12.6,
+     "1": 26.8,
+     "2": 34.1,
+     "3": 61.2,
+     "4": 82.7
+    }
+   },
+   "train_vs_grid": {
+    "n": 3840,
+    "spearman": 0.5861,
+    "mae_vs_reference_scale": 11.81,
+    "mean_score_by_label": {
+     "0": 5.0,
+     "1": 16.4,
+     "2": 38.0,
+     "3": 55.9,
+     "4": 75.5
+    }
+   }
+  },
+  "ab": {
+   "vs_grid_labels": {
+    "n": 1920,
+    "spearman": 0.6207,
+    "mae_vs_reference_scale": 10.68,
+    "mean_score_by_label": {
+     "0": 2.6,
+     "1": 12.6,
+     "2": 33.4,
+     "3": 54.1,
+     "4": 78.5
+    }
+   },
+   "vs_AB_consensus": {
+    "n": 80,
+    "spearman": 0.7917,
+    "mae_vs_reference_scale": 11.83,
+    "mean_score_by_label": {
+     "0": 5.1,
+     "1": 17.8,
+     "2": 56.9,
+     "3": 80.3,
+     "4": 61.1
+    }
+   },
+   "vs_sonnet": {
+    "n": 110,
+    "spearman": 0.6545,
+    "mae_vs_reference_scale": 17.12,
+    "mean_score_by_label": {
+     "0": 13.0,
+     "1": 27.9,
+     "2": 34.7,
+     "3": 61.3,
+     "4": 82.2
+    }
+   },
+   "train_vs_grid": {
+    "n": 3840,
+    "spearman": 0.5845,
+    "mae_vs_reference_scale": 11.94,
+    "mean_score_by_label": {
+     "0": 5.2,
+     "1": 16.9,
+     "2": 39.1,
+     "3": 56.7,
+     "4": 75.6
+    }
+   }
+  },
+  "grid+ab": {
+   "vs_grid_labels": {
+    "n": 1920,
+    "spearman": 0.6216,
+    "mae_vs_reference_scale": 10.61,
+    "mean_score_by_label": {
+     "0": 2.5,
+     "1": 12.0,
+     "2": 32.5,
+     "3": 55.0,
+     "4": 79.0
+    }
+   },
+   "vs_AB_consensus": {
+    "n": 80,
+    "spearman": 0.7899,
+    "mae_vs_reference_scale": 11.86,
+    "mean_score_by_label": {
+     "0": 4.4,
+     "1": 16.0,
+     "2": 57.0,
+     "3": 80.9,
+     "4": 65.6
+    }
+   },
+   "vs_sonnet": {
+    "n": 110,
+    "spearman": 0.6705,
+    "mae_vs_reference_scale": 16.62,
+    "mean_score_by_label": {
+     "0": 12.5,
+     "1": 26.7,
+     "2": 34.1,
+     "3": 61.1,
+     "4": 82.9
+    }
+   },
+   "train_vs_grid": {
+    "n": 3840,
+    "spearman": 0.586,
+    "mae_vs_reference_scale": 11.8,
+    "mean_score_by_label": {
+     "0": 5.0,
+     "1": 16.4,
+     "2": 37.9,
+     "3": 55.8,
+     "4": 75.4
+    }
+   }
+  }
+ },
+ "calibration_candidates": {
+  "isotonic_grid": {
+   "grid_test": {
+    "n": 1920,
+    "spearman": 0.6229,
+    "mae_vs_reference_scale": 7.96,
+    "mean_score_by_label": {
+     "0": 8.4,
+     "1": 15.8,
+     "2": 30.1,
+     "3": 48.0,
+     "4": 73.3
+    }
+   },
+   "AB_test": {
+    "n": 80,
+    "spearman": 0.7913,
+    "mae_vs_reference_scale": 10.62,
+    "mean_score_by_label": {
+     "0": 9.8,
+     "1": 19.5,
+     "2": 48.5,
+     "3": 74.2,
+     "4": 57.4
+    }
+   },
+   "sonnet": {
+    "n": 110,
+    "spearman": 0.6648,
+    "mae_vs_reference_scale": 15.58,
+    "mean_score_by_label": {
+     "0": 16.5,
+     "1": 25.9,
+     "2": 30.7,
+     "3": 55.8,
+     "4": 77.4
+    }
+   }
+  },
+  "isotonic_ab": {
+   "grid_test": {
+    "n": 1920,
+    "spearman": 0.6188,
+    "mae_vs_reference_scale": 8.14,
+    "mean_score_by_label": {
+     "0": 8.4,
+     "1": 19.8,
+     "2": 37.7,
+     "3": 57.2,
+     "4": 78.5
+    }
+   },
+   "AB_test": {
+    "n": 80,
+    "spearman": 0.8,
+    "mae_vs_reference_scale": 9.91,
+    "mean_score_by_label": {
+     "0": 10.3,
+     "1": 25.8,
+     "2": 59.4,
+     "3": 80.8,
+     "4": 69.7
+    }
+   },
+   "sonnet": {
+    "n": 110,
+    "spearman": 0.6662,
+    "mae_vs_reference_scale": 15.58,
+    "mean_score_by_label": {
+     "0": 20.1,
+     "1": 32.3,
+     "2": 39.5,
+     "3": 61.3,
+     "4": 82.2
+    }
+   }
+  },
+  "isotonic_both": {
+   "grid_test": {
+    "n": 1920,
+    "spearman": 0.6231,
+    "mae_vs_reference_scale": 7.92,
+    "mean_score_by_label": {
+     "0": 8.3,
+     "1": 15.7,
+     "2": 30.0,
+     "3": 47.8,
+     "4": 73.2
+    }
+   },
+   "AB_test": {
+    "n": 80,
+    "spearman": 0.7907,
+    "mae_vs_reference_scale": 10.61,
+    "mean_score_by_label": {
+     "0": 9.8,
+     "1": 19.3,
+     "2": 47.9,
+     "3": 73.9,
+     "4": 57.7
+    }
+   },
+   "sonnet": {
+    "n": 110,
+    "spearman": 0.6648,
+    "mae_vs_reference_scale": 15.55,
+    "mean_score_by_label": {
+     "0": 16.4,
+     "1": 25.8,
+     "2": 30.6,
+     "3": 55.1,
+     "4": 77.5
+    }
+   }
+  },
+  "linear_grid": {
+   "grid_test": {
+    "n": 1920,
+    "spearman": 0.6216,
+    "mae_vs_reference_scale": 9.27,
+    "mean_score_by_label": {
+     "0": 11.6,
+     "1": 17.5,
+     "2": 30.1,
+     "3": 43.8,
+     "4": 58.6
+    }
+   },
+   "AB_test": {
+    "n": 80,
+    "spearman": 0.7894,
+    "mae_vs_reference_scale": 10.8,
+    "mean_score_by_label": {
+     "0": 12.8,
+     "1": 20.1,
+     "2": 45.0,
+     "3": 59.6,
+     "4": 50.3
+    }
+   },
+   "sonnet": {
+    "n": 110,
+    "spearman": 0.6701,
+    "mae_vs_reference_scale": 15.54,
+    "mean_score_by_label": {
+     "0": 17.8,
+     "1": 26.6,
+     "2": 31.1,
+     "3": 47.7,
+     "4": 60.9
+    }
+   },
+   "map": [
+    0.6142,
+    10.0943
+   ]
+  },
+  "linear_ab": {
+   "grid_test": {
+    "n": 1920,
+    "spearman": 0.6216,
+    "mae_vs_reference_scale": 9.4,
+    "mean_score_by_label": {
+     "0": 12.4,
+     "1": 19.2,
+     "2": 33.8,
+     "3": 49.6,
+     "4": 66.6
+    }
+   },
+   "AB_test": {
+    "n": 80,
+    "spearman": 0.7894,
+    "mae_vs_reference_scale": 10.39,
+    "mean_score_by_label": {
+     "0": 13.9,
+     "1": 22.2,
+     "2": 51.0,
+     "3": 67.8,
+     "4": 57.0
+    }
+   },
+   "sonnet": {
+    "n": 110,
+    "spearman": 0.6701,
+    "mae_vs_reference_scale": 14.72,
+    "mean_score_by_label": {
+     "0": 19.6,
+     "1": 29.7,
+     "2": 34.9,
+     "3": 54.1,
+     "4": 69.3
+    }
+   },
+   "map": [
+    0.7087,
+    10.6727
+   ]
+  }
+ },
+ "calibration": {
+  "source": "shipped",
+  "uncalibrated": {
+   "grid_test": {
+    "n": 1920,
+    "spearman": 0.6216,
+    "mae_vs_reference_scale": 10.61,
+    "mean_score_by_label": {
+     "0": 2.5,
+     "1": 12.1,
+     "2": 32.6,
+     "3": 54.9,
+     "4": 78.9
+    }
+   },
+   "AB_test": {
+    "n": 80,
+    "spearman": 0.7894,
+    "mae_vs_reference_scale": 11.86,
+    "mean_score_by_label": {
+     "0": 4.5,
+     "1": 16.2,
+     "2": 56.9,
+     "3": 80.7,
+     "4": 65.4
+    }
+   }
+  },
+  "chosen": "isotonic_ab",
+  "points": [
+   [
+    0.0,
+    0.157
+   ],
+   [
+    0.1,
+    0.157
+   ],
+   [
+    1.7,
+    0.583
+   ],
+   [
+    4.8,
+    0.583
+   ],
+   [
+    4.9,
+    0.919
+   ],
+   [
+    22.0,
+    0.919
+   ],
+   [
+    23.0,
+    1.071
+   ],
+   [
+    28.5,
+    1.071
+   ],
+   [
+    30.8,
+    1.571
+   ],
+   [
+    38.6,
+    1.571
+   ],
+   [
+    40.1,
+    1.75
+   ],
+   [
+    40.2,
+    1.75
+   ],
+   [
+    40.3,
+    1.929
+   ],
+   [
+    47.6,
+    1.929
+   ],
+   [
+    48.4,
+    2.46
+   ],
+   [
+    68.8,
+    2.46
+   ],
+   [
+    72.4,
+    3.0
+   ],
+   [
+    73.3,
+    3.115
+   ],
+   [
+    87.9,
+    3.115
+   ],
+   [
+    89.4,
+    3.667
+   ],
+   [
+    92.8,
+    3.667
+   ],
+   [
+    96.4,
+    4.0
+   ],
+   [
+    100.0,
+    4.0
+   ]
+  ],
+  "grid_test": {
+   "n": 1920,
+   "spearman": 0.6188,
+   "mae_vs_reference_scale": 8.14,
+   "mean_score_by_label": {
+    "0": 8.4,
+    "1": 19.8,
+    "2": 37.7,
+    "3": 57.2,
+    "4": 78.5
+   }
+  },
+  "AB_test": {
+   "n": 80,
+   "spearman": 0.8,
+   "mae_vs_reference_scale": 9.91,
+   "mean_score_by_label": {
+    "0": 10.3,
+    "1": 25.8,
+    "2": 59.4,
+    "3": 80.8,
+    "4": 69.7
+   }
+  }
+ }
+}

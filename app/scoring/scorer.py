@@ -2,6 +2,7 @@
 import json
 from dataclasses import dataclass
 from functools import lru_cache
+from itertools import pairwise
 from pathlib import Path
 
 import numpy as np
@@ -28,13 +29,42 @@ class Params:
     calibration: dict[str, tuple[float, float]]  # {"same": (lo, hi), "cross": (lo, hi)} by CV/JD language pair
     title_weight: float
     version: str
+    label_map: dict | None = None  # optional monotone map raw 0-100 score -> calibrated 0-100 score
 
 
 @lru_cache
 def load_params(path: str = str(PARAMS_PATH)) -> Params:
     d = json.loads(Path(path).read_text(encoding="utf-8"))
     cal = {k: (v["lo"], v["hi"]) for k, v in d["calibration"].items()}
-    return Params(d["weights"], cal, d.get("title_weight", 0.3), d["version"])
+    return Params(d["weights"], cal, d.get("title_weight", 0.3), d["version"], d.get("label_map"))
+
+
+def apply_label_map(score: float, p: Params) -> float:
+    """Map the raw weighted score onto the calibrated 0-100 scale (monotone, so the ranking is unchanged).
+
+    The map is fitted on labelled pairs (eval/fit_grid.py): it lines the score up with the rubric
+    (0-4) instead of leaving it compressed. Linear maps are `a * score + b`; isotonic maps are
+    piecewise linear through `knots` = [[raw_score, calibrated_score], ...]."""
+    lm = p.label_map
+    if not lm:
+        return score
+    if lm.get("type") == "isotonic" and lm.get("knots"):
+        knots = lm["knots"]
+        xs = [k[0] for k in knots]
+        ys = [k[1] for k in knots]
+        if score <= xs[0]:
+            return float(ys[0])
+        if score >= xs[-1]:
+            return float(ys[-1])
+        for (x0, y0), (x1, y1) in pairwise(knots):
+            if x0 <= score <= x1:
+                if x1 == x0:
+                    return float(y1)
+                t = (score - x0) / (x1 - x0)
+                return float(y0 + t * (y1 - y0))
+        return float(ys[-1])
+    a, b = lm.get("a", 1.0), lm.get("b", 0.0)
+    return float(a * score + b)
 
 
 def band(score: float) -> str:
@@ -52,21 +82,25 @@ def _calibrate(raw: float, p: Params, pair: str) -> float:
 
 
 def semantic_signal(cv: CvSpec, job: JobSpec, emb: Embedder, p: Params) -> tuple[float, float, list[dict]]:
-    """Returns (raw, title_fit, top_matches). raw = mixture of requirement coverage and title fit (uncalibrated cosine)."""
+    """Returns (raw, title_fit, top_matches). raw = mixture of requirement coverage and title fit (uncalibrated cosine).
+
+    Embedders may expose asymmetric sides (embed_query / embed_passage); symmetric ones just use embed()."""
     if not cv.chunks:
         return 0.0, 0.0, []
-    chunk_vecs = emb.embed(cv.chunks)
+    embed_q = getattr(emb, "embed_query", emb.embed)
+    embed_p = getattr(emb, "embed_passage", emb.embed)
+    chunk_vecs = embed_p(cv.chunks)
     lines = job.lines or ([job.title] if job.title else [])
     cover, matches = 0.0, []
     if lines:
-        sims = emb.embed(lines) @ chunk_vecs.T  # (lines, chunks)
+        sims = embed_q(lines) @ chunk_vecs.T  # (lines, chunks)
         best = sims.max(axis=1)
         cover = float(best.mean())
         for i in np.argsort(-best)[:TOP_MATCHES]:
             matches.append({"requirement": lines[i][:160], "cv_excerpt": redact(cv.chunks[int(sims[i].argmax())])[:160], "similarity": round(float(best[i]), 3)})
     title_fit = 0.0
     if job.title and cv.title_candidates:
-        title_fit = float((emb.embed([job.title]) @ emb.embed(cv.title_candidates).T).max())
+        title_fit = float((embed_q([job.title]) @ embed_p(cv.title_candidates).T).max())
     raw = (1 - p.title_weight) * cover + p.title_weight * title_fit if lines else title_fit
     return raw, title_fit, matches
 
@@ -121,6 +155,7 @@ def score(cv: CvSpec, job: JobSpec, emb: Embedder, p: Params | None = None, lang
     avail = {k: v for k, v in comps.items() if v is not None}
     wsum = sum(p.weights[k] for k in avail)
     overall = 100.0 * sum(p.weights[k] * v for k, v in avail.items()) / wsum if wsum else 0.0
+    overall = apply_label_map(overall, p)
 
     notes, caps = [], []
     core = [m for members, _, req in items if req for m in members if not is_generic(m)]

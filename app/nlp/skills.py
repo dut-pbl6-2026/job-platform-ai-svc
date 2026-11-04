@@ -23,6 +23,20 @@ _POST_CUES = re.compile(r"^\W*(?:\w+\s+){0,2}?(?:han che|chua thanh thao|chua gi
 _RESETS = {"but", "however", "although", "though", "while", "whereas", "nhung", "tuy", "tuy nhien", "song", "va co"}
 
 
+def _variants(alias: str) -> list[str]:
+    """Alias plus a regular plural form, so 'firewalls' matches 'firewall' and 'reconciliations' matches 'reconciliation'.
+
+    Short aliases are left alone ('hr' must not match 'hrs' = hours)."""
+    out = [alias]
+    if len(alias) < 4:
+        return out
+    if alias.endswith("s"):
+        out.append(alias + "es")  # analysis -> analyses, business -> businesses
+    else:
+        out.append(alias + "s")
+    return out
+
+
 @dataclass
 class Hit:
     skill: str
@@ -49,7 +63,8 @@ def load_index() -> SkillIndex:
         for canon, aliases in skills.items():
             groups[canon] = group
             for a in {canon, *(aliases or [])}:
-                alias_to_canon.setdefault(fold(str(a)), canon)
+                for v in _variants(fold(str(a))):
+                    alias_to_canon.setdefault(v, canon)
     alts = sorted(alias_to_canon, key=len, reverse=True)
     body = "|".join(re.escape(a) for a in alts)
     pattern = re.compile(rf"(?<![a-z0-9+#.]){'(?:' + body + ')'}(?![a-z0-9+#]|\.[a-z0-9])")

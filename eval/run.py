@@ -216,11 +216,17 @@ def main():
     for k, v in rep["results"].items():
         print(f"{k:50s} rho={v['spearman']:.3f} CI={v['spearman_ci95'][0]:.2f}..{v['spearman_ci95'][1]:.2f} auc={v['auc_relevant']:.3f} ndcg5={v['ndcg5']:.3f}")
     if not a.no_write_params:
-        Path("data/model_params.json").write_text(json.dumps({
+        params_path = Path("data/model_params.json")
+        label_map = {}
+        if params_path.exists():
+            # keep the score map of the shipped (grid) fit: it is fitted by eval/fit_grid.py
+            label_map = json.loads(params_path.read_text(encoding="utf-8")).get("label_map") or {}
+        params_path.write_text(json.dumps({
             "version": fitted.version, "weights": w, "calibration": {k: {"lo": v[0], "hi": v[1]} for k, v in calib.items()}, "title_weight": 0.3,
+            **({"label_map": label_map} if label_map else {}),
             "fitted_on": {"model": emb.name, "train_pairs": len(tr), "train_jobs": len({p["job_slug"] for p in tr}), "test_spearman": rep["results"]["hybrid (fitted)"]["spearman"]},
         }, indent=1))
-        print("wrote data/model_params.json")
+        print("wrote data/model_params.json (240-pair fit - run eval/fit_grid.py for the shipped grid fit)")
 
 
 if __name__ == "__main__":
