@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     rate_limit_per_min: int = 10
     cache_ttl_seconds: int = 24 * 3600
     job_cache_ttl_seconds: int = 600
-    embedding_model: str = "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
+    embedding_model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     embedding_cache_dir: str = "models"
     busy_timeout_seconds: float = 30.0
     jwt_secret: str = ""  # empty => dev auth (X-User-Id header, same convention as the .NET services)

@@ -1,21 +1,21 @@
 {
- "model": "sentence-transformers/paraphrase-multilingual-mpnet-base-v2",
+ "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
  "n_pairs": 5760,
  "params": {
   "weights": {
-   "skills": 0.494,
+   "skills": 0.472,
    "semantic": 0.49,
-   "experience": 0.01,
-   "education": 0.006
+   "experience": 0.038,
+   "education": 0.001
   },
   "calibration": {
    "same": [
-    0.404,
-    0.698
+    0.401,
+    0.671
    ],
    "cross": [
-    0.47,
-    0.631
+    0.457,
+    0.57
    ]
   },
   "title_weight": 0.3,
@@ -23,48 +23,48 @@
  },
  "overall": {
   "n": 5760,
-  "spearman": 0.5989384634168915,
-  "auc_ge2": 0.9074542236328125,
-  "auc_ge3": 0.9586446757057848,
-  "ndcg5": 0.8332691208221168,
+  "spearman": 0.5923542591136923,
+  "auc_ge2": 0.9153047180175781,
+  "auc_ge3": 0.9600781663656972,
+  "ndcg5": 0.8514934559794601,
   "mean_score_by_label": {
-   "0": 10.2,
-   "1": 22.5,
-   "2": 40.8,
-   "3": 58.1,
-   "4": 76.6
+   "0": 9.5,
+   "1": 17.7,
+   "2": 32.6,
+   "3": 48.8,
+   "4": 67.6
   },
   "spearman_ci95": [
-   0.549,
-   0.642
+   0.541,
+   0.635
   ]
  },
  "in_domain": {
   "n": 768,
-  "spearman": 0.6855224056551984,
-  "auc_ge2": 0.8687737191650854,
-  "auc_ge3": 0.9116018662519441,
-  "ndcg5": 0.8709709187474811,
+  "spearman": 0.6812061506940059,
+  "auc_ge2": 0.8751927182163187,
+  "auc_ge3": 0.9164541213063764,
+  "ndcg5": 0.8726063071912119,
   "mean_score_by_label": {
-   "0": 16.2,
-   "1": 26.9,
-   "2": 44.9,
-   "3": 58.6,
-   "4": 81.8
+   "0": 12.9,
+   "1": 20.7,
+   "2": 34.8,
+   "3": 50.4,
+   "4": 72.1
   }
  },
  "out_of_domain": {
   "n": 4992,
-  "spearman": 0.5443997973671353,
-  "auc_ge2": 0.8989796266172709,
-  "auc_ge3": 0.9603275322314606,
-  "ndcg5": 0.7677528253839793,
+  "spearman": 0.5379690305432271,
+  "auc_ge2": 0.9094863049119903,
+  "auc_ge3": 0.9619273235264416,
+  "ndcg5": 0.7933308164505831,
   "mean_score_by_label": {
-   "0": 9.9,
-   "1": 21.7,
-   "2": 38.4,
-   "3": 57.6,
-   "4": 70.5
+   "0": 9.4,
+   "1": 17.0,
+   "2": 31.3,
+   "3": 47.4,
+   "4": 62.2
   }
  },
  "component_corr": {
@@ -74,59 +74,59 @@
   },
   "semantic": {
    "n": 5760,
-   "spearman": 0.519
+   "spearman": 0.485
   },
   "experience": {
    "n": 5760,
-   "spearman": 0.519
+   "spearman": 0.507
   },
   "education": {
    "n": 2880,
-   "spearman": 0.367
+   "spearman": 0.348
   }
  },
  "per_job_spearman": {
-  "accountant": 0.553,
-  "bi-analyst": 0.583,
-  "civil-engineer": 0.425,
-  "data-scientist": 0.542,
-  "devops": 0.788,
-  "digital-marketing": 0.534,
-  "graphic-designer": 0.512,
-  "hr-specialist": 0.54,
-  "java-backend": 0.759,
-  "netsec": 0.656,
-  "project-manager": 0.415,
-  "python-backend": 0.728,
-  "qa-engineer": 0.619,
-  "react-frontend": 0.621,
-  "sales-exec": 0.494,
-  "sap-consultant": 0.457,
-  "vi-ba": 0.54,
-  "vi-giao-vien": 0.412,
-  "vi-ke-toan": 0.577,
-  "vi-kinh-doanh": 0.516,
-  "vi-ky-su-dien": 0.533,
-  "vi-nhan-su": 0.525,
-  "vi-python-backend": 0.693,
-  "vi-reactjs": 0.687
+  "accountant": 0.551,
+  "bi-analyst": 0.593,
+  "civil-engineer": 0.392,
+  "data-scientist": 0.492,
+  "devops": 0.745,
+  "digital-marketing": 0.526,
+  "graphic-designer": 0.452,
+  "hr-specialist": 0.57,
+  "java-backend": 0.746,
+  "netsec": 0.618,
+  "project-manager": 0.437,
+  "python-backend": 0.709,
+  "qa-engineer": 0.6,
+  "react-frontend": 0.597,
+  "sales-exec": 0.497,
+  "sap-consultant": 0.453,
+  "vi-ba": 0.558,
+  "vi-giao-vien": 0.421,
+  "vi-ke-toan": 0.553,
+  "vi-kinh-doanh": 0.496,
+  "vi-ky-su-dien": 0.445,
+  "vi-nhan-su": 0.51,
+  "vi-python-backend": 0.695,
+  "vi-reactjs": 0.692
  },
  "sonnet_crosscheck": {
   "n": 292,
-  "spearman": 0.6526280872787256,
-  "auc_ge2": 0.8086778992819261,
-  "auc_ge3": 0.8858585858585859,
-  "ndcg5": 0.8847695157082652,
+  "spearman": 0.648472615592947,
+  "auc_ge2": 0.8104848171962266,
+  "auc_ge3": 0.8870896464646464,
+  "ndcg5": 0.90024239964093,
   "mean_score_by_label": {
-   "0": 23.0,
-   "1": 36.2,
-   "2": 45.9,
-   "3": 68.3,
-   "4": 79.0
+   "0": 17.9,
+   "1": 28.1,
+   "2": 36.0,
+   "3": 60.5,
+   "4": 69.7
   },
   "spearman_ci95": [
-   0.576,
-   0.726
+   0.573,
+   0.718
   ]
  },
  "vs_AB_consensus_240": {},

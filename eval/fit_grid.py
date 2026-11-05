@@ -249,6 +249,8 @@ def main():
                     help="use the cosine window already in data/model_params.json (e.g. fitted by eval/run.py)")
     ap.add_argument("--cosine-source", default="grid", choices=["grid", "ab"],
                     help="which labels fit the cosine window (grid = 5760 Haiku labels, ab = the repo's A/B labels)")
+    ap.add_argument("--weights", default="auto", choices=["auto", "shipped", "grid", "ab", "grid+ab"],
+                    help="which weight set to ship (auto = the best of the candidates on the held-out jobs)")
     a = ap.parse_args()
 
     grid = load_labels(a.labels)
@@ -295,7 +297,6 @@ def main():
     if w_ab:
         candidates["ab"] = w_ab
         candidates["grid+ab"] = w_both
-
     # --- every candidate is evaluated on the held-out jobs, against three label sets
     rep["heldout"] = {}
     for name, w in candidates.items():
@@ -312,7 +313,12 @@ def main():
     # Three training sources are compared; the map must be calibrated for the score a recruiter
     # sees (a pool of applicants, not a grid that is 87 % out-of-domain), so the A/B pairs
     # (stratified relevant/adjacent/unrelated) are the reference set.
-    best_name = max(rep["heldout"], key=lambda k: rep["heldout"][k]["vs_grid_labels"]["spearman"])
+    # `--weights` pins the weight set: "auto" picks the best candidate on the held-out jobs
+    # (which is a mild optimistic bias), "grid" uses the fit on the 5 760 Haiku labels only.
+    if a.weights == "auto":
+        best_name = max(rep["heldout"], key=lambda k: rep["heldout"][k]["vs_grid_labels"]["spearman"])
+    else:
+        best_name = a.weights
     w = candidates[best_name]
     s_tr = blended(tr, w)
     s_te = blended(te, w)

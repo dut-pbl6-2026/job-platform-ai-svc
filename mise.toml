@@ -12,10 +12,10 @@ description = "Sync env from infra"
 
 [tasks.models]
 run = "HF_HUB_DISABLE_XET=1 uv run python scripts/download_models.py"
-description = "Download the embedding model into ./models (one-off, ~860 MB)"
+description = "Download the embedding model into ./models (one-off, ~235 MB for MiniLM)"
 
 [tasks.eval-grid]
-run = "uv run python eval/fit_grid.py --cosine-source ab"
+run = "uv run python eval/fit_grid.py --cosine-source ab --weights grid"
 description = "Fit weights + calibration + score map on the 5 760-pair label grid (train jobs only) and write data/model_params.json"
 
 [tasks.dev]

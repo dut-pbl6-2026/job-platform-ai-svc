@@ -13,7 +13,7 @@ Python FastAPI — part of **Vietnam Job Platform** (`pbl6`) under [`dut-pbl6-20
 ```bash
 # prerequisites: Python 3.12 + uv (mise install), tesseract-ocr with eng+vie  (apt install tesseract-ocr tesseract-ocr-eng tesseract-ocr-vie)
 mise run install      # uv sync
-mise run models       # one-off: downloads the ONNX embedding model (paraphrase-multilingual-mpnet-base-v2, 860 MB) into ./models
+mise run models       # one-off: downloads the ONNX embedding model (paraphrase-multilingual-MiniLM-L12-v2, ~235 MB) into ./models
 mise run sync-env     # copies the shared .env (JWT secret etc.)
 JOB_SERVICE_URL=http://localhost:5002 mise run dev   # http://localhost:6000
 
@@ -23,6 +23,7 @@ curl -s -H "Authorization: Bearer $TOKEN" -F cv_file=@cv.pdf -F job_id=<uuid> lo
 
 Auth: `Authorization: Bearer <JWT from auth-svc>`; with no `JWT_SECRET` configured the service accepts `X-User-Id` (dev only). Through the gateway: `POST /api/ai/score-resume` (requires login).
 In Docker: `docker compose up -d --build ai gateway` from `job-platform-infra` (the image bakes the model in; the container is offline at runtime).
+Runtime footprint (measured, MiniLM + Tesseract): ~830 MB resident, ~900 MB peak → fits the `mem_limit: 1g` container; minimum host = 2 vCPU / 2 GB RAM / 5 GB disk, no GPU (see `eval/REPORT.md` §6).
 
 ## Configuration (env)
 
@@ -34,7 +35,7 @@ In Docker: `docker compose up -d --build ai gateway` from `job-platform-infra` (
 app/parsing    PDF (text layer + hidden-text filter, per-page OCR fallback), DOCX, content-based type detection
 app/nlp        normalise (NFC, fold), sections, skill taxonomy + sentence-scoped negation + "A or B" groups, years, education
 app/scoring    specs (CV/job views), scorer (explainable components), template suggestions
-app/embed.py   ONNX embeddings (fastembed, multilingual mpnet-base-v2) + deterministic hashing fallback for tests
+app/embed.py   ONNX embeddings (fastembed, multilingual MiniLM-L12-v2) + deterministic hashing fallback for tests
 data/          skills.yaml (taxonomy), model_params.json (fitted weights + calibration + score map)
 eval/          jobs, 5 760-pair label grid, blind labels (A/B + Haiku + Sonnet), run.py / fit_grid.py, REPORT.md
 tests/         79+ unit/API/robustness tests (no model download needed)
