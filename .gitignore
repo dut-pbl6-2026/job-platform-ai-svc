@@ -6,3 +6,22 @@ obj/
 .env.bak.*
 mise.toml.local
 INFISICAL_TOKEN
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+models/
+eval/cache/
+eval/batches/
+
+# eval: per-pair score dumps (large; regenerate with eval/fit_grid.py & eval/compare_embedders.py)
+eval/results_scored_grid.json
+eval/results_features_grid.json
+eval/results_compare_local.json
+eval/results_compare_embedders.json
+eval/results_full_cv4.json
+eval/results_full_mpnet.json
+eval/results_full_plural.json

@@ -1,0 +1,212 @@
+{
+ "protocol": "same PII-scrubbed CV text, provider-specific cosine window and weights fitted on the 16 train jobs; held-out = the 8 unseen jobs (1 920 pairs)",
+ "n_heldout_pairs": 1920,
+ "providers": {
+  "minilm": {
+   "weights": {
+    "skills": 0.454,
+    "semantic": 0.525,
+    "experience": 0.001,
+    "education": 0.02
+   },
+   "calibration": {
+    "same": [
+     0.379,
+     0.635
+    ],
+    "cross": [
+     0.402,
+     0.638
+    ]
+   },
+   "seconds_for_5760_pairs": 83.2,
+   "heldout_vs_grid": {
+    "n": 1920,
+    "spearman": 0.5706,
+    "mae_vs_reference_scale": 10.28,
+    "mean_score_by_label": {
+     "0": 4.0,
+     "1": 14.2,
+     "2": 33.6,
+     "3": 53.5,
+     "4": 75.2
+    }
+   },
+   "heldout_vs_AB": {
+    "n": 80,
+    "spearman": 0.7633,
+    "mae_vs_reference_scale": 11.46,
+    "mean_score_by_label": {
+     "0": 8.2,
+     "1": 16.4,
+     "2": 54.4,
+     "3": 75.8,
+     "4": 60.3
+    }
+   },
+   "heldout_vs_sonnet": {
+    "n": 110,
+    "spearman": 0.6462,
+    "mae_vs_reference_scale": 16.19,
+    "mean_score_by_label": {
+     "0": 15.3,
+     "1": 29.1,
+     "2": 36.0,
+     "3": 63.3,
+     "4": 79.0
+    }
+   },
+   "semantic_rho_heldout": 0.4544,
+   "skills_rho_heldout": 0.5842,
+   "heldout_rho_recomputed": 0.5706
+  },
+  "mpnet": {
+   "weights": {
+    "skills": 0.467,
+    "semantic": 0.504,
+    "experience": 0.001,
+    "education": 0.029
+   },
+   "calibration": {
+    "same": [
+     0.379,
+     0.662
+    ],
+    "cross": [
+     0.412,
+     0.641
+    ]
+   },
+   "seconds_for_5760_pairs": 237.2,
+   "heldout_vs_grid": {
+    "n": 1920,
+    "spearman": 0.598,
+    "mae_vs_reference_scale": 10.26,
+    "mean_score_by_label": {
+     "0": 3.7,
+     "1": 14.8,
+     "2": 35.9,
+     "3": 56.7,
+     "4": 80.3
+    }
+   },
+   "heldout_vs_AB": {
+    "n": 80,
+    "spearman": 0.7777,
+    "mae_vs_reference_scale": 11.55,
+    "mean_score_by_label": {
+     "0": 6.0,
+     "1": 17.2,
+     "2": 58.3,
+     "3": 84.2,
+     "4": 67.1
+    }
+   },
+   "heldout_vs_sonnet": {
+    "n": 110,
+    "spearman": 0.6631,
+    "mae_vs_reference_scale": 16.1,
+    "mean_score_by_label": {
+     "0": 16.4,
+     "1": 30.6,
+     "2": 37.6,
+     "3": 66.4,
+     "4": 84.5
+    }
+   },
+   "semantic_rho_heldout": 0.5158,
+   "skills_rho_heldout": 0.5842,
+   "heldout_rho_recomputed": 0.598
+  },
+  "nvidia": {
+   "weights": {
+    "skills": 0.358,
+    "semantic": 0.626,
+    "experience": 0.001,
+    "education": 0.014
+   },
+   "calibration": {
+    "same": [
+     0.227,
+     0.446
+    ],
+    "cross": [
+     0.174,
+     0.323
+    ]
+   },
+   "seconds_for_5760_pairs": 4.9,
+   "heldout_vs_grid": {
+    "n": 1920,
+    "spearman": 0.5954,
+    "mae_vs_reference_scale": 9.81,
+    "mean_score_by_label": {
+     "0": 2.8,
+     "1": 12.7,
+     "2": 35.4,
+     "3": 57.5,
+     "4": 76.0
+    }
+   },
+   "heldout_vs_AB": {
+    "n": 80,
+    "spearman": 0.7997,
+    "mae_vs_reference_scale": 12.99,
+    "mean_score_by_label": {
+     "0": 6.1,
+     "1": 36.5,
+     "2": 58.5,
+     "3": 84.0,
+     "4": 56.4
+    }
+   },
+   "heldout_vs_sonnet": {
+    "n": 110,
+    "spearman": 0.6871,
+    "mae_vs_reference_scale": 15.01,
+    "mean_score_by_label": {
+     "0": 12.4,
+     "1": 28.6,
+     "2": 34.7,
+     "3": 62.9,
+     "4": 83.6
+    }
+   },
+   "semantic_rho_heldout": 0.5145,
+   "skills_rho_heldout": 0.5842,
+   "api_calls": 11281,
+   "heldout_rho_recomputed": 0.5954
+  }
+ },
+ "heldout_rho_vs_grid": {
+  "minilm": 0.5706,
+  "mpnet": 0.598,
+  "nvidia": 0.5954
+ },
+ "paired_bootstrap": {
+  "minilm_minus_mpnet": {
+   "delta_rho_median": -0.0263,
+   "ci95": [
+    -0.0496,
+    -0.0054
+   ],
+   "p_first_better": 0.002
+  },
+  "minilm_minus_nvidia": {
+   "delta_rho_median": -0.0208,
+   "ci95": [
+    -0.0977,
+    0.0489
+   ],
+   "p_first_better": 0.301
+  },
+  "mpnet_minus_nvidia": {
+   "delta_rho_median": 0.0045,
+   "ci95": [
+    -0.0591,
+    0.0694
+   ],
+   "p_first_better": 0.564
+  }
+ }
+}

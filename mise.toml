@@ -1,0 +1,39 @@
+[tools]
+python = "3.12"
+uv = "latest"
+
+[tasks.install]
+run = "uv sync"
+description = "Install dependencies (needs tesseract-ocr with eng+vie installed on the machine)"
+
+[tasks.sync-env]
+run = "cp ../job-platform-infra/envs/.env.dev.example .env"
+description = "Sync env from infra"
+
+[tasks.models]
+run = "HF_HUB_DISABLE_XET=1 uv run python scripts/download_models.py"
+description = "Download the embedding model into ./models (one-off, ~235 MB for MiniLM)"
+
+[tasks.eval-grid]
+run = "uv run python eval/fit_grid.py --cosine-source ab --weights grid"
+description = "Fit weights + calibration + score map on the 5 760-pair label grid (train jobs only) and write data/model_params.json"
+
+[tasks.dev]
+run = "uv run uvicorn app.main:create_app --factory --reload --port 6000"
+description = "Run the service locally on :6000 (dev auth: send X-User-Id)"
+
+[tasks.test]
+run = "uv run pytest -q"
+description = "Unit + API + robustness tests (no model download needed)"
+
+[tasks.lint]
+run = "uv run ruff check app tests eval scripts"
+description = "Lint"
+
+[tasks.eval]
+run = "uv run python eval/run.py --no-write-params"
+description = "240-pair ablation on the A/B labels (held-out JDs) - does not touch data/model_params.json"
+
+[tasks.verify]
+run = "mise run lint && mise run test"
+description = "Full verification before PR"

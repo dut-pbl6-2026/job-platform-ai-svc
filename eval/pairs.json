@@ -1,0 +1,1922 @@
+[
+ {
+  "pair_id": "python-backend__00",
+  "job_slug": "python-backend",
+  "cv_id": "5046845d34",
+  "cv_path": "PythonDeveloper/f7ea5d5a5c7a6a08.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "python-backend__01",
+  "job_slug": "python-backend",
+  "cv_id": "7febee1049",
+  "cv_path": "Python Developer resumes/Image_1.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "python-backend__02",
+  "job_slug": "python-backend",
+  "cv_id": "79e395b650",
+  "cv_path": "DevOps Engineer/136.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "python-backend__03",
+  "job_slug": "python-backend",
+  "cv_id": "25ab23589f",
+  "cv_path": "Python Developer/69.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "python-backend__04",
+  "job_slug": "python-backend",
+  "cv_id": "879c792b39",
+  "cv_path": "Information Technology/4.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "python-backend__05",
+  "job_slug": "python-backend",
+  "cv_id": "b42f055897",
+  "cv_path": "SAP Developer/133.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "python-backend__06",
+  "job_slug": "python-backend",
+  "cv_id": "51d93388c6",
+  "cv_path": "OperationManager/de1cec1e9f8cb5c7.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "python-backend__07",
+  "job_slug": "python-backend",
+  "cv_id": "c392f1bb62",
+  "cv_path": "Accountant resumes/Image_4.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "python-backend__08",
+  "job_slug": "python-backend",
+  "cv_id": "d92fc18a79",
+  "cv_path": "Python Developer/72.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "python-backend__09",
+  "job_slug": "python-backend",
+  "cv_id": "fd5f6770c3",
+  "cv_path": "ETL Developer/26.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "react-frontend__00",
+  "job_slug": "react-frontend",
+  "cv_id": "1bab1d5822",
+  "cv_path": "Education/16.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "react-frontend__01",
+  "job_slug": "react-frontend",
+  "cv_id": "c922d2313e",
+  "cv_path": "React Developer resumes/Image_71.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "react-frontend__02",
+  "job_slug": "react-frontend",
+  "cv_id": "a7549eac11",
+  "cv_path": "Python Developer/65.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "react-frontend__03",
+  "job_slug": "react-frontend",
+  "cv_id": "8529895029",
+  "cv_path": "React Developer/163.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "react-frontend__04",
+  "job_slug": "react-frontend",
+  "cv_id": "dad6f31b7f",
+  "cv_path": "web designing resumes/Image_29.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "react-frontend__05",
+  "job_slug": "react-frontend",
+  "cv_id": "65ec077cca",
+  "cv_path": "React Developer/5.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "react-frontend__06",
+  "job_slug": "react-frontend",
+  "cv_id": "1ac21f1c3d",
+  "cv_path": "Designer/169.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "react-frontend__07",
+  "job_slug": "react-frontend",
+  "cv_id": "75d4808ba9",
+  "cv_path": "React Developer resumes/Image_34.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "react-frontend__08",
+  "job_slug": "react-frontend",
+  "cv_id": "0314b91c45",
+  "cv_path": "DevOps Engineer resumes/Image_74.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "react-frontend__09",
+  "job_slug": "react-frontend",
+  "cv_id": "49564373b9",
+  "cv_path": "Management/4.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "java-backend__00",
+  "job_slug": "java-backend",
+  "cv_id": "59e4cbbc23",
+  "cv_path": "ETL Developer/94.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "java-backend__01",
+  "job_slug": "java-backend",
+  "cv_id": "686bad5cfa",
+  "cv_path": "Education/16e46d1ebd84a038.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "java-backend__02",
+  "job_slug": "java-backend",
+  "cv_id": "32e72a2441",
+  "cv_path": "JavaDeveloper/bf9ade5bee889ea4.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "java-backend__03",
+  "job_slug": "java-backend",
+  "cv_id": "b933a3cf94",
+  "cv_path": "Java Developer resumes/Image_21.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "java-backend__04",
+  "job_slug": "java-backend",
+  "cv_id": "b27042d321",
+  "cv_path": "BPO resumes/Image_99.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "java-backend__05",
+  "job_slug": "java-backend",
+  "cv_id": "5c8ab6d01c",
+  "cv_path": "Information Technology/32.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "java-backend__06",
+  "job_slug": "java-backend",
+  "cv_id": "d3117c416a",
+  "cv_path": "BusinessAnalyst/37aafd26201d20f6.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "java-backend__07",
+  "job_slug": "java-backend",
+  "cv_id": "6159cfd562",
+  "cv_path": "Java Developer resumes/Image_77.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "java-backend__08",
+  "job_slug": "java-backend",
+  "cv_id": "bf2635b5a3",
+  "cv_path": "SQL Developer resumes/Image_78.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "java-backend__09",
+  "job_slug": "java-backend",
+  "cv_id": "f7e41b616a",
+  "cv_path": "Java Developer resumes/Image_42.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "devops__00",
+  "job_slug": "devops",
+  "cv_id": "2fc999b41e",
+  "cv_path": "Database/99.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "devops__01",
+  "job_slug": "devops",
+  "cv_id": "1ececebb02",
+  "cv_path": "DevOps Engineer/50.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "devops__02",
+  "job_slug": "devops",
+  "cv_id": "53201765fd",
+  "cv_path": "DevOpsEngineer/f7bf883236ba04ab.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "devops__03",
+  "job_slug": "devops",
+  "cv_id": "557626c455",
+  "cv_path": "NSE/d5aa3fdf9f521a97.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "devops__04",
+  "job_slug": "devops",
+  "cv_id": "15e29bc79a",
+  "cv_path": "Banking/128.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "devops__05",
+  "job_slug": "devops",
+  "cv_id": "a9ccfc1fc9",
+  "cv_path": "DevOps Engineer resumes/Image_53.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "devops__06",
+  "job_slug": "devops",
+  "cv_id": "84e0dbf893",
+  "cv_path": "Database resumes/Image_17.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "devops__07",
+  "job_slug": "devops",
+  "cv_id": "caaa6b439a",
+  "cv_path": "Network Security Engineer resumes/Image_74.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "devops__08",
+  "job_slug": "devops",
+  "cv_id": "c617089158",
+  "cv_path": "DevOps Engineer resumes/Image_85.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "devops__09",
+  "job_slug": "devops",
+  "cv_id": "30991802bf",
+  "cv_path": "Arts/13.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "data-scientist__00",
+  "job_slug": "data-scientist",
+  "cv_id": "8d06472e3a",
+  "cv_path": "DataScience/9431a0e8125243ec.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "data-scientist__01",
+  "job_slug": "data-scientist",
+  "cv_id": "50a05abdb9",
+  "cv_path": "Public Relations resumes/Image_42.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "data-scientist__02",
+  "job_slug": "data-scientist",
+  "cv_id": "09e736d6f9",
+  "cv_path": "Data Science/69.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "data-scientist__03",
+  "job_slug": "data-scientist",
+  "cv_id": "a57527f43d",
+  "cv_path": "Database resumes/Image_34.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "data-scientist__04",
+  "job_slug": "data-scientist",
+  "cv_id": "04d378c14f",
+  "cv_path": "Data Science/74.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "data-scientist__05",
+  "job_slug": "data-scientist",
+  "cv_id": "95d81cb46c",
+  "cv_path": "Public Relations resumes/Image_25.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "data-scientist__06",
+  "job_slug": "data-scientist",
+  "cv_id": "0ac7f6c5d2",
+  "cv_path": "ETL Developer/148.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "data-scientist__07",
+  "job_slug": "data-scientist",
+  "cv_id": "13f37a513b",
+  "cv_path": "Aviation/158.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "data-scientist__08",
+  "job_slug": "data-scientist",
+  "cv_id": "909e5ce242",
+  "cv_path": "Finance resumes/Image_1.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "data-scientist__09",
+  "job_slug": "data-scientist",
+  "cv_id": "3c162591a4",
+  "cv_path": "Data Science/130.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "bi-analyst__00",
+  "job_slug": "bi-analyst",
+  "cv_id": "a83ac6807b",
+  "cv_path": "ETL Developer/59.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "bi-analyst__01",
+  "job_slug": "bi-analyst",
+  "cv_id": "2bd074be85",
+  "cv_path": "Business Analyst resumes/Image_78.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "bi-analyst__02",
+  "job_slug": "bi-analyst",
+  "cv_id": "e0d2f4a24b",
+  "cv_path": "JavaDeveloper/65c4f4e57e27bbfa.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "bi-analyst__03",
+  "job_slug": "bi-analyst",
+  "cv_id": "019b432b6d",
+  "cv_path": "BPO resumes/Image_24.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "bi-analyst__04",
+  "job_slug": "bi-analyst",
+  "cv_id": "713c1d55d6",
+  "cv_path": "PythonDeveloper/27f69373b3a01184.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "bi-analyst__05",
+  "job_slug": "bi-analyst",
+  "cv_id": "2aa0e11407",
+  "cv_path": "Data Science/172.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "bi-analyst__06",
+  "job_slug": "bi-analyst",
+  "cv_id": "ab6a472c7e",
+  "cv_path": "Finance/5e9fcd0d6cdbfa18.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "bi-analyst__07",
+  "job_slug": "bi-analyst",
+  "cv_id": "1341b662fd",
+  "cv_path": "PythonDeveloper/f07639c18d09fab5.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "bi-analyst__08",
+  "job_slug": "bi-analyst",
+  "cv_id": "5020052f20",
+  "cv_path": "Aviation/16.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "bi-analyst__09",
+  "job_slug": "bi-analyst",
+  "cv_id": "64f874c9b0",
+  "cv_path": "SQL/f49d0db4dd471a22.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "qa-engineer__00",
+  "job_slug": "qa-engineer",
+  "cv_id": "7c9dfb0d8c",
+  "cv_path": "CivilEngineer/8821a4dbc83a57c0.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "qa-engineer__01",
+  "job_slug": "qa-engineer",
+  "cv_id": "a006450c19",
+  "cv_path": "Testing/126.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "qa-engineer__02",
+  "job_slug": "qa-engineer",
+  "cv_id": "ffbfa43783",
+  "cv_path": "Testing/103.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "qa-engineer__03",
+  "job_slug": "qa-engineer",
+  "cv_id": "137ea748ff",
+  "cv_path": "Python Developer resumes/Image_93.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "qa-engineer__04",
+  "job_slug": "qa-engineer",
+  "cv_id": "43fc2f6982",
+  "cv_path": "Testing resumes/Image_83.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "qa-engineer__05",
+  "job_slug": "qa-engineer",
+  "cv_id": "d8738f1919",
+  "cv_path": "Python Developer/116.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "qa-engineer__06",
+  "job_slug": "qa-engineer",
+  "cv_id": "bc252d7ebc",
+  "cv_path": "Mechanical Engineer resumes/Image_137.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "qa-engineer__07",
+  "job_slug": "qa-engineer",
+  "cv_id": "529475ce30",
+  "cv_path": "Banking/3c351afb0795fe42.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "qa-engineer__08",
+  "job_slug": "qa-engineer",
+  "cv_id": "778d0c9264",
+  "cv_path": "Python Developer/17.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "qa-engineer__09",
+  "job_slug": "qa-engineer",
+  "cv_id": "efb011cc0f",
+  "cv_path": "Testing/d1076694f63005c7.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "sap-consultant__00",
+  "job_slug": "sap-consultant",
+  "cv_id": "9f4fad076f",
+  "cv_path": "SAP Developer resumes/Image_69.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "sap-consultant__01",
+  "job_slug": "sap-consultant",
+  "cv_id": "7eb23d4c6c",
+  "cv_path": "Consultant/58.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "sap-consultant__02",
+  "job_slug": "sap-consultant",
+  "cv_id": "c5ff15739d",
+  "cv_path": "SAP Developer/102.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "sap-consultant__03",
+  "job_slug": "sap-consultant",
+  "cv_id": "0258ec9cf7",
+  "cv_path": "Sales resumes/Image_73.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "sap-consultant__04",
+  "job_slug": "sap-consultant",
+  "cv_id": "244ce444d6",
+  "cv_path": "Banking/111.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "sap-consultant__05",
+  "job_slug": "sap-consultant",
+  "cv_id": "e63f2a2c5a",
+  "cv_path": "WebDesigning/8bd44c36ae64a357.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "sap-consultant__06",
+  "job_slug": "sap-consultant",
+  "cv_id": "4df29f40ae",
+  "cv_path": "SAP Developer resumes/Image_89.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "sap-consultant__07",
+  "job_slug": "sap-consultant",
+  "cv_id": "33ca40cb64",
+  "cv_path": "Accountant/917193d42b0f5f4d.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "sap-consultant__08",
+  "job_slug": "sap-consultant",
+  "cv_id": "02ce4169b4",
+  "cv_path": "SAP Developer/34.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "sap-consultant__09",
+  "job_slug": "sap-consultant",
+  "cv_id": "54a1324824",
+  "cv_path": "Information Technology resumes/Image_89.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "netsec__00",
+  "job_slug": "netsec",
+  "cv_id": "9ba4d4139e",
+  "cv_path": "Banking/5.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "netsec__01",
+  "job_slug": "netsec",
+  "cv_id": "9db26fd031",
+  "cv_path": "NSE/eb06ba400eb33a08.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "netsec__02",
+  "job_slug": "netsec",
+  "cv_id": "8ffcbb8c76",
+  "cv_path": "Network Security Engineer resumes/Image_100.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "netsec__03",
+  "job_slug": "netsec",
+  "cv_id": "96713abb47",
+  "cv_path": "Database/65.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "netsec__04",
+  "job_slug": "netsec",
+  "cv_id": "df4b29129e",
+  "cv_path": "DevOps Engineer resumes/Image_5.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "netsec__05",
+  "job_slug": "netsec",
+  "cv_id": "ebe8a97abb",
+  "cv_path": "Finance resumes/Image_16.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "netsec__06",
+  "job_slug": "netsec",
+  "cv_id": "c2544aed17",
+  "cv_path": "NSE/b7652361afda717b.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "netsec__07",
+  "job_slug": "netsec",
+  "cv_id": "ad3dbff031",
+  "cv_path": "Advocate/58.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "netsec__08",
+  "job_slug": "netsec",
+  "cv_id": "cb65b9ea2d",
+  "cv_path": "NSE/3dd3ee6cd68ef4df.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "netsec__09",
+  "job_slug": "netsec",
+  "cv_id": "49485a57e2",
+  "cv_path": "DevOps Engineer resumes/Image_69.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "accountant__00",
+  "job_slug": "accountant",
+  "cv_id": "fb1885b855",
+  "cv_path": "Python Developer/15.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "accountant__01",
+  "job_slug": "accountant",
+  "cv_id": "2c546071f1",
+  "cv_path": "Accountant/14.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "accountant__02",
+  "job_slug": "accountant",
+  "cv_id": "39c43fe9a1",
+  "cv_path": "Advocate/ba77440de8f99831.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "accountant__03",
+  "job_slug": "accountant",
+  "cv_id": "00a61fc4e4",
+  "cv_path": "Finance/9616d4b491de77bf.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "accountant__04",
+  "job_slug": "accountant",
+  "cv_id": "35fe7d73b6",
+  "cv_path": "Accountant/d92f3dd8fd23c6cd.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "accountant__05",
+  "job_slug": "accountant",
+  "cv_id": "479b7b31e9",
+  "cv_path": "Management/141.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "accountant__06",
+  "job_slug": "accountant",
+  "cv_id": "e2b94ad121",
+  "cv_path": "DevOps Engineer/112.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "accountant__07",
+  "job_slug": "accountant",
+  "cv_id": "9032ceb47d",
+  "cv_path": "Finance resumes/Image_4.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "accountant__08",
+  "job_slug": "accountant",
+  "cv_id": "6b8e4f071a",
+  "cv_path": "Banking/eb4d520237782c06.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "accountant__09",
+  "job_slug": "accountant",
+  "cv_id": "0bb47c2896",
+  "cv_path": "Banking resumes/Image_88.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "hr-specialist__00",
+  "job_slug": "hr-specialist",
+  "cv_id": "e885fd3697",
+  "cv_path": "DOT/1d1117383c48ecad.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "hr-specialist__01",
+  "job_slug": "hr-specialist",
+  "cv_id": "2cd63fc7ec",
+  "cv_path": "Database/135.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "hr-specialist__02",
+  "job_slug": "hr-specialist",
+  "cv_id": "c368739f33",
+  "cv_path": "Human Resources/195.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "hr-specialist__03",
+  "job_slug": "hr-specialist",
+  "cv_id": "d437bb8e97",
+  "cv_path": "React/4320db1e1d3917d1.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "hr-specialist__04",
+  "job_slug": "hr-specialist",
+  "cv_id": "95f0f4c843",
+  "cv_path": "Accountant/162.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "hr-specialist__05",
+  "job_slug": "hr-specialist",
+  "cv_id": "73f433029f",
+  "cv_path": "Human Resources/19.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "hr-specialist__06",
+  "job_slug": "hr-specialist",
+  "cv_id": "41daaf8183",
+  "cv_path": "Consultant/54.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "hr-specialist__07",
+  "job_slug": "hr-specialist",
+  "cv_id": "8a9a20d2ce",
+  "cv_path": "Human Resources/36.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "hr-specialist__08",
+  "job_slug": "hr-specialist",
+  "cv_id": "4a949a95b0",
+  "cv_path": "HR resumes/Image_4.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "hr-specialist__09",
+  "job_slug": "hr-specialist",
+  "cv_id": "b472a0fb46",
+  "cv_path": "Management/ca88c9f66551af68.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "sales-exec__00",
+  "job_slug": "sales-exec",
+  "cv_id": "7004599e26",
+  "cv_path": "Management/62.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "sales-exec__01",
+  "job_slug": "sales-exec",
+  "cv_id": "ef8a749293",
+  "cv_path": "Sales resumes/Image_110.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "sales-exec__02",
+  "job_slug": "sales-exec",
+  "cv_id": "6f5b8c04b2",
+  "cv_path": "Sales/cc0342e6871cdad8.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "sales-exec__03",
+  "job_slug": "sales-exec",
+  "cv_id": "fabfcd2e06",
+  "cv_path": "Sales/e58fc7187f682222.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "sales-exec__04",
+  "job_slug": "sales-exec",
+  "cv_id": "ed038732a9",
+  "cv_path": "Accountant/57.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "sales-exec__05",
+  "job_slug": "sales-exec",
+  "cv_id": "881eb7504b",
+  "cv_path": "Sales resumes/Image_51.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "sales-exec__06",
+  "job_slug": "sales-exec",
+  "cv_id": "ae038c008f",
+  "cv_path": "Digital/412d80d8d3377b83.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "sales-exec__07",
+  "job_slug": "sales-exec",
+  "cv_id": "8d5ec8c36b",
+  "cv_path": "DataScience/5260bbf019ad955a.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "sales-exec__08",
+  "job_slug": "sales-exec",
+  "cv_id": "a6f2e21abe",
+  "cv_path": "Digital Media resumes/Image_68.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "sales-exec__09",
+  "job_slug": "sales-exec",
+  "cv_id": "55455fe2fc",
+  "cv_path": "DOT/5a9c81e74a176657.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "digital-marketing__00",
+  "job_slug": "digital-marketing",
+  "cv_id": "c2b6dd20a5",
+  "cv_path": "NSE/d19007a02744d06f.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "digital-marketing__01",
+  "job_slug": "digital-marketing",
+  "cv_id": "54d6be9a1e",
+  "cv_path": "Arts/17.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "digital-marketing__02",
+  "job_slug": "digital-marketing",
+  "cv_id": "7c6310f39a",
+  "cv_path": "Designer/73.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "digital-marketing__03",
+  "job_slug": "digital-marketing",
+  "cv_id": "b52a19fc41",
+  "cv_path": "Arts/75.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "digital-marketing__04",
+  "job_slug": "digital-marketing",
+  "cv_id": "f2d2e9dc47",
+  "cv_path": "Designer/174.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "digital-marketing__05",
+  "job_slug": "digital-marketing",
+  "cv_id": "f0e611cc3e",
+  "cv_path": "Finance resumes/Image_72.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "digital-marketing__06",
+  "job_slug": "digital-marketing",
+  "cv_id": "53381f4844",
+  "cv_path": "Consultant/50.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "digital-marketing__07",
+  "job_slug": "digital-marketing",
+  "cv_id": "45e217c6e5",
+  "cv_path": "Arts/19.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "digital-marketing__08",
+  "job_slug": "digital-marketing",
+  "cv_id": "47fe955157",
+  "cv_path": "Blockchain/131d542b8982a2d7.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "digital-marketing__09",
+  "job_slug": "digital-marketing",
+  "cv_id": "2cc222d8e1",
+  "cv_path": "Digital Media/77.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "civil-engineer__00",
+  "job_slug": "civil-engineer",
+  "cv_id": "c327267536",
+  "cv_path": "Management/8df53bb4190bf438.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "civil-engineer__01",
+  "job_slug": "civil-engineer",
+  "cv_id": "91bed4bc82",
+  "cv_path": "CivilEngineer/6f2c61e30da80d1f.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "civil-engineer__02",
+  "job_slug": "civil-engineer",
+  "cv_id": "7c846c5d61",
+  "cv_path": "Management/148.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "civil-engineer__03",
+  "job_slug": "civil-engineer",
+  "cv_id": "7b8358aed1",
+  "cv_path": "CivilEngineer/9ce694c156cd63e5.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "civil-engineer__04",
+  "job_slug": "civil-engineer",
+  "cv_id": "7be9e30ee5",
+  "cv_path": "Consultant resumes/Image_5.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "civil-engineer__05",
+  "job_slug": "civil-engineer",
+  "cv_id": "f895cab79f",
+  "cv_path": "CivilEngineer/66ef5984367a7a77.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "civil-engineer__06",
+  "job_slug": "civil-engineer",
+  "cv_id": "7499bee889",
+  "cv_path": "BusinessAnalyst/66e96354c0bea993.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "civil-engineer__07",
+  "job_slug": "civil-engineer",
+  "cv_id": "68429e50ae",
+  "cv_path": "Architect/1e07eca0e387fcb2.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "civil-engineer__08",
+  "job_slug": "civil-engineer",
+  "cv_id": "f8dbd62dc4",
+  "cv_path": "Sales/3e59332b5269df10.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "civil-engineer__09",
+  "job_slug": "civil-engineer",
+  "cv_id": "c12edbdba2",
+  "cv_path": "CivilEngineer/f88bc3073a9c974b.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "graphic-designer__00",
+  "job_slug": "graphic-designer",
+  "cv_id": "9f0117f478",
+  "cv_path": "Education/8.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "graphic-designer__01",
+  "job_slug": "graphic-designer",
+  "cv_id": "0562313333",
+  "cv_path": "Arts/164.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "graphic-designer__02",
+  "job_slug": "graphic-designer",
+  "cv_id": "b4a8738e8f",
+  "cv_path": "Public/67ef50127196ce0a.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "graphic-designer__03",
+  "job_slug": "graphic-designer",
+  "cv_id": "d0c734d5ac",
+  "cv_path": "React Developer resumes/Image_50.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "graphic-designer__04",
+  "job_slug": "graphic-designer",
+  "cv_id": "6e73b5cda0",
+  "cv_path": "Digital/cd3d4bd9fcb6e5be.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "graphic-designer__05",
+  "job_slug": "graphic-designer",
+  "cv_id": "74c707e9b4",
+  "cv_path": "HR resumes/Image_81.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "graphic-designer__06",
+  "job_slug": "graphic-designer",
+  "cv_id": "03dfb7e8b9",
+  "cv_path": "Arts resumes/Image_2.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "graphic-designer__07",
+  "job_slug": "graphic-designer",
+  "cv_id": "9003d2d305",
+  "cv_path": "Arts/167.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "graphic-designer__08",
+  "job_slug": "graphic-designer",
+  "cv_id": "2f9f87f0e5",
+  "cv_path": "Designer/146.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "graphic-designer__09",
+  "job_slug": "graphic-designer",
+  "cv_id": "40aae1a023",
+  "cv_path": "Architect/829189a5dd7a27fb.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "project-manager__00",
+  "job_slug": "project-manager",
+  "cv_id": "a2d4700dc2",
+  "cv_path": "BusinessAnalyst/91356a7fe5cfeaf4.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "project-manager__01",
+  "job_slug": "project-manager",
+  "cv_id": "dbc38e6d47",
+  "cv_path": "HR/3c8bd176a28dc6bd.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "project-manager__02",
+  "job_slug": "project-manager",
+  "cv_id": "53f99fd5b0",
+  "cv_path": "Management/105.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "project-manager__03",
+  "job_slug": "project-manager",
+  "cv_id": "547ea1be20",
+  "cv_path": "Education/20.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "project-manager__04",
+  "job_slug": "project-manager",
+  "cv_id": "1f389a347b",
+  "cv_path": "Management/118.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "project-manager__05",
+  "job_slug": "project-manager",
+  "cv_id": "d8eba69a13",
+  "cv_path": "Consult/7e3338b724a7973f.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "project-manager__06",
+  "job_slug": "project-manager",
+  "cv_id": "34256a1bda",
+  "cv_path": "Management/011280f5a040bf28.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "project-manager__07",
+  "job_slug": "project-manager",
+  "cv_id": "79bf00546b",
+  "cv_path": "Database resumes/Image_22.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "project-manager__08",
+  "job_slug": "project-manager",
+  "cv_id": "81ec75baeb",
+  "cv_path": "Consultant/56.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "project-manager__09",
+  "job_slug": "project-manager",
+  "cv_id": "8e580c0aac",
+  "cv_path": "Management/e1666198d57291e3.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-python-backend__00",
+  "job_slug": "vi-python-backend",
+  "cv_id": "907d2a0fdd",
+  "cv_path": "DevOpsEngineer/e5ff266baa8f4b69.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-python-backend__01",
+  "job_slug": "vi-python-backend",
+  "cv_id": "ec2c99b146",
+  "cv_path": "DevOps Engineer resumes/Image_60.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-python-backend__02",
+  "job_slug": "vi-python-backend",
+  "cv_id": "1705a500f3",
+  "cv_path": "Public/8703d6c941ba04b3.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-python-backend__03",
+  "job_slug": "vi-python-backend",
+  "cv_id": "bb12411ffa",
+  "cv_path": "Python Developer resumes/Image_20.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-python-backend__04",
+  "job_slug": "vi-python-backend",
+  "cv_id": "379f2fc089",
+  "cv_path": "Python Developer/73.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-python-backend__05",
+  "job_slug": "vi-python-backend",
+  "cv_id": "269aff8755",
+  "cv_path": "Accountant/152.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-python-backend__06",
+  "job_slug": "vi-python-backend",
+  "cv_id": "4f280da507",
+  "cv_path": "Python Developer/104.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-python-backend__07",
+  "job_slug": "vi-python-backend",
+  "cv_id": "203f7d3ce3",
+  "cv_path": "SQL Developer resumes/Image_9.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-python-backend__08",
+  "job_slug": "vi-python-backend",
+  "cv_id": "c2aa95feeb",
+  "cv_path": "PythonDeveloper/6c4a1e4b115feca6.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-python-backend__09",
+  "job_slug": "vi-python-backend",
+  "cv_id": "6f940fc994",
+  "cv_path": "Managment resumes/Image_37.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-reactjs__00",
+  "job_slug": "vi-reactjs",
+  "cv_id": "228b696c17",
+  "cv_path": "React Developer/26.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-reactjs__01",
+  "job_slug": "vi-reactjs",
+  "cv_id": "a56b97b087",
+  "cv_path": "Information Technology/85.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-reactjs__02",
+  "job_slug": "vi-reactjs",
+  "cv_id": "8083d9b061",
+  "cv_path": "Accountant resumes/Image_5.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-reactjs__03",
+  "job_slug": "vi-reactjs",
+  "cv_id": "d2f8c1dfbc",
+  "cv_path": "React Developer/121.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-reactjs__04",
+  "job_slug": "vi-reactjs",
+  "cv_id": "653b16577f",
+  "cv_path": "Sales/9a59ca8560fe115a.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-reactjs__05",
+  "job_slug": "vi-reactjs",
+  "cv_id": "3ec27eba0c",
+  "cv_path": "Electrical Engineering resumes/Image_22.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-reactjs__06",
+  "job_slug": "vi-reactjs",
+  "cv_id": "c7050edc5e",
+  "cv_path": "React Developer/65.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-reactjs__07",
+  "job_slug": "vi-reactjs",
+  "cv_id": "b392e341a9",
+  "cv_path": "Designer/82.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-reactjs__08",
+  "job_slug": "vi-reactjs",
+  "cv_id": "3c417bdfda",
+  "cv_path": "React Developer/55.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-reactjs__09",
+  "job_slug": "vi-reactjs",
+  "cv_id": "f0cd28251e",
+  "cv_path": "JavaDeveloper/bc264d878ab1c9c0.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-ke-toan__00",
+  "job_slug": "vi-ke-toan",
+  "cv_id": "6487b64d8a",
+  "cv_path": "Finance/bbf650e86a6ffe25.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-ke-toan__01",
+  "job_slug": "vi-ke-toan",
+  "cv_id": "b619772f8d",
+  "cv_path": "Sales/60411cdb077eca58.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-ke-toan__02",
+  "job_slug": "vi-ke-toan",
+  "cv_id": "5f579c21e4",
+  "cv_path": "Management/119.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-ke-toan__03",
+  "job_slug": "vi-ke-toan",
+  "cv_id": "1ba49baa1a",
+  "cv_path": "Banking/99326e2a335d8e4d.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-ke-toan__04",
+  "job_slug": "vi-ke-toan",
+  "cv_id": "75764ed87e",
+  "cv_path": "Python Developer/127.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-ke-toan__05",
+  "job_slug": "vi-ke-toan",
+  "cv_id": "b38a0b5407",
+  "cv_path": "Data Science/119.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-ke-toan__06",
+  "job_slug": "vi-ke-toan",
+  "cv_id": "842aa6d7d1",
+  "cv_path": "Accountant/26.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-ke-toan__07",
+  "job_slug": "vi-ke-toan",
+  "cv_id": "0d6ab70a66",
+  "cv_path": "Design/0b625f352ce58ea2.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-ke-toan__08",
+  "job_slug": "vi-ke-toan",
+  "cv_id": "ad72fd86e4",
+  "cv_path": "Accountant/126.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-ke-toan__09",
+  "job_slug": "vi-ke-toan",
+  "cv_id": "071fe437f5",
+  "cv_path": "Finance resumes/Image_9.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-nhan-su__00",
+  "job_slug": "vi-nhan-su",
+  "cv_id": "e137d65f05",
+  "cv_path": "Education/13.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-nhan-su__01",
+  "job_slug": "vi-nhan-su",
+  "cv_id": "17676733a5",
+  "cv_path": "Data Science/145.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-nhan-su__02",
+  "job_slug": "vi-nhan-su",
+  "cv_id": "427f434bde",
+  "cv_path": "HR resumes/Image_89.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-nhan-su__03",
+  "job_slug": "vi-nhan-su",
+  "cv_id": "25aef42678",
+  "cv_path": "Sales/982d2368f9b5fcc9.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-nhan-su__04",
+  "job_slug": "vi-nhan-su",
+  "cv_id": "7a84e9dca3",
+  "cv_path": "Arts/178.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-nhan-su__05",
+  "job_slug": "vi-nhan-su",
+  "cv_id": "20fafd2820",
+  "cv_path": "Consultant resumes/Image_2.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-nhan-su__06",
+  "job_slug": "vi-nhan-su",
+  "cv_id": "2aa841e160",
+  "cv_path": "Human Resources/179.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-nhan-su__07",
+  "job_slug": "vi-nhan-su",
+  "cv_id": "57a649dc4e",
+  "cv_path": "HR resumes/Image_93.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-nhan-su__08",
+  "job_slug": "vi-nhan-su",
+  "cv_id": "bd9fb13bca",
+  "cv_path": "Arts/4ab9b91454284c62.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-nhan-su__09",
+  "job_slug": "vi-nhan-su",
+  "cv_id": "6933898714",
+  "cv_path": "HR/f8a6ffd95c12fdd6.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-kinh-doanh__00",
+  "job_slug": "vi-kinh-doanh",
+  "cv_id": "47341e8205",
+  "cv_path": "Education/94.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-kinh-doanh__01",
+  "job_slug": "vi-kinh-doanh",
+  "cv_id": "474284ac7a",
+  "cv_path": "Sales/957844d7110f0c5b.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-kinh-doanh__02",
+  "job_slug": "vi-kinh-doanh",
+  "cv_id": "f3faa2a055",
+  "cv_path": "Management/129.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-kinh-doanh__03",
+  "job_slug": "vi-kinh-doanh",
+  "cv_id": "6bb5b95f6f",
+  "cv_path": "HR/13c52943f676ada5.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-kinh-doanh__04",
+  "job_slug": "vi-kinh-doanh",
+  "cv_id": "218abffe13",
+  "cv_path": "Sales resumes/Image_45.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-kinh-doanh__05",
+  "job_slug": "vi-kinh-doanh",
+  "cv_id": "2ea80345da",
+  "cv_path": "Testing/52.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-kinh-doanh__06",
+  "job_slug": "vi-kinh-doanh",
+  "cv_id": "bbe5f51b39",
+  "cv_path": "Python Developer/86.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-kinh-doanh__07",
+  "job_slug": "vi-kinh-doanh",
+  "cv_id": "8441f8401b",
+  "cv_path": "Sales resumes/Image_86.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-kinh-doanh__08",
+  "job_slug": "vi-kinh-doanh",
+  "cv_id": "d4393a73c0",
+  "cv_path": "Management/97.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-kinh-doanh__09",
+  "job_slug": "vi-kinh-doanh",
+  "cv_id": "39f2a0bd7b",
+  "cv_path": "Sales resumes/Image_54.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-ky-su-dien__00",
+  "job_slug": "vi-ky-su-dien",
+  "cv_id": "114db3245a",
+  "cv_path": "Mechanical Engineer resumes/Image_78.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-ky-su-dien__01",
+  "job_slug": "vi-ky-su-dien",
+  "cv_id": "b1a51553d7",
+  "cv_path": "Architects resumes/Image_2.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-ky-su-dien__02",
+  "job_slug": "vi-ky-su-dien",
+  "cv_id": "e93f783eee",
+  "cv_path": "Testing resumes/Image_12.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-ky-su-dien__03",
+  "job_slug": "vi-ky-su-dien",
+  "cv_id": "dc780b373d",
+  "cv_path": "ElectricalEngineer/ab70b758a79918b8.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-ky-su-dien__04",
+  "job_slug": "vi-ky-su-dien",
+  "cv_id": "417b83fb89",
+  "cv_path": "Electrical Engineering resumes/Image_74.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-ky-su-dien__05",
+  "job_slug": "vi-ky-su-dien",
+  "cv_id": "aea3188339",
+  "cv_path": "Accountant/1f795814d580d4c0.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-ky-su-dien__06",
+  "job_slug": "vi-ky-su-dien",
+  "cv_id": "7ff24e602f",
+  "cv_path": "ElectricalEngineer/d015f4956890cec8.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-ky-su-dien__07",
+  "job_slug": "vi-ky-su-dien",
+  "cv_id": "8dcb7d148a",
+  "cv_path": "ElectricalEngineer/0d962de99bead7c8.pdf",
+  "stratum": "relevant",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-ky-su-dien__08",
+  "job_slug": "vi-ky-su-dien",
+  "cv_id": "637895eeaf",
+  "cv_path": "Automobile/1affffab2137b44e.pdf",
+  "stratum": "adjacent",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-ky-su-dien__09",
+  "job_slug": "vi-ky-su-dien",
+  "cv_id": "38afd42d02",
+  "cv_path": "Data Science/61.pdf",
+  "stratum": "unrelated",
+  "split": "test"
+ },
+ {
+  "pair_id": "vi-giao-vien__00",
+  "job_slug": "vi-giao-vien",
+  "cv_id": "c7d2e1d1e9",
+  "cv_path": "Consultant/27.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-giao-vien__01",
+  "job_slug": "vi-giao-vien",
+  "cv_id": "51f8f20b76",
+  "cv_path": "Education/99.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-giao-vien__02",
+  "job_slug": "vi-giao-vien",
+  "cv_id": "4a4a51c76a",
+  "cv_path": "PBO/6406f9b7d22969f4.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-giao-vien__03",
+  "job_slug": "vi-giao-vien",
+  "cv_id": "322b3b64d3",
+  "cv_path": "Education/91.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-giao-vien__04",
+  "job_slug": "vi-giao-vien",
+  "cv_id": "f2b63bbf89",
+  "cv_path": "HR resumes/Image_66.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-giao-vien__05",
+  "job_slug": "vi-giao-vien",
+  "cv_id": "d64eb8e9de",
+  "cv_path": "Education/4a3d5af354e73488.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-giao-vien__06",
+  "job_slug": "vi-giao-vien",
+  "cv_id": "d326e35567",
+  "cv_path": "Designer/95.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-giao-vien__07",
+  "job_slug": "vi-giao-vien",
+  "cv_id": "63287437bb",
+  "cv_path": "Consultant resumes/Image_37.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-giao-vien__08",
+  "job_slug": "vi-giao-vien",
+  "cv_id": "4329050df1",
+  "cv_path": "Education/57cef505ec294c16.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-giao-vien__09",
+  "job_slug": "vi-giao-vien",
+  "cv_id": "2c911b7c19",
+  "cv_path": "React Developer/15.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-ba__00",
+  "job_slug": "vi-ba",
+  "cv_id": "be3f964ce9",
+  "cv_path": "BusinessAnalyst/6d8bffa8920dd9c9.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-ba__01",
+  "job_slug": "vi-ba",
+  "cv_id": "b24ef7ca2e",
+  "cv_path": "Testing/c6733bacb708abb4.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-ba__02",
+  "job_slug": "vi-ba",
+  "cv_id": "c7202f512d",
+  "cv_path": "Consultant/107.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-ba__03",
+  "job_slug": "vi-ba",
+  "cv_id": "220f77f36f",
+  "cv_path": "Banking/53.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-ba__04",
+  "job_slug": "vi-ba",
+  "cv_id": "62ab3e1821",
+  "cv_path": "Testing/182.pdf",
+  "stratum": "adjacent",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-ba__05",
+  "job_slug": "vi-ba",
+  "cv_id": "cc7cd6ede9",
+  "cv_path": "BusinessAnalyst/d858a7cd3a7022e5.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-ba__06",
+  "job_slug": "vi-ba",
+  "cv_id": "8fd9d6673c",
+  "cv_path": "Business Analyst resumes/Image_12.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-ba__07",
+  "job_slug": "vi-ba",
+  "cv_id": "57384271a4",
+  "cv_path": "Business Analyst resumes/Image_10.pdf",
+  "stratum": "relevant",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-ba__08",
+  "job_slug": "vi-ba",
+  "cv_id": "d2772c9b89",
+  "cv_path": "BPO resumes/Image_74.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ },
+ {
+  "pair_id": "vi-ba__09",
+  "job_slug": "vi-ba",
+  "cv_id": "cb0c295d7d",
+  "cv_path": "Architects resumes/Image_71.pdf",
+  "stratum": "unrelated",
+  "split": "train"
+ }
+]

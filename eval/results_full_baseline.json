@@ -1,0 +1,134 @@
+{
+ "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+ "n_pairs": 5760,
+ "params": {
+  "weights": {
+   "skills": 0.481,
+   "semantic": 0.433,
+   "experience": 0.087,
+   "education": 0.0
+  },
+  "calibration": {
+   "same": [
+    0.401,
+    0.671
+   ],
+   "cross": [
+    0.457,
+    0.57
+   ]
+  },
+  "title_weight": 0.3,
+  "version": "fitted-2026-11-02"
+ },
+ "overall": {
+  "n": 5760,
+  "spearman": 0.5911172218937285,
+  "auc_ge2": 0.9162487792968751,
+  "auc_ge3": 0.9596918876325446,
+  "ndcg5": 0.8520059611325022,
+  "mean_score_by_label": {
+   "0": 4.0,
+   "1": 14.9,
+   "2": 36.1,
+   "3": 55.7,
+   "4": 73.6
+  },
+  "spearman_ci95": [
+   0.538,
+   0.636
+  ]
+ },
+ "in_domain": {
+  "n": 768,
+  "spearman": 0.675145118788835,
+  "auc_ge2": 0.8738325723434535,
+  "auc_ge3": 0.9136671850699845,
+  "ndcg5": 0.8803821395970125,
+  "mean_score_by_label": {
+   "0": 8.3,
+   "1": 19.3,
+   "2": 39.5,
+   "3": 57.1,
+   "4": 78.2
+  }
+ },
+ "out_of_domain": {
+  "n": 4992,
+  "spearman": 0.5372479013723117,
+  "auc_ge2": 0.9104953362419137,
+  "auc_ge3": 0.9618549500117818,
+  "ndcg5": 0.8000399589253636,
+  "mean_score_by_label": {
+   "0": 3.8,
+   "1": 14.0,
+   "2": 34.1,
+   "3": 54.4,
+   "4": 68.1
+  }
+ },
+ "component_corr": {
+  "skills": {
+   "n": 5760,
+   "spearman": 0.56
+  },
+  "semantic": {
+   "n": 5760,
+   "spearman": 0.485
+  },
+  "experience": {
+   "n": 5760,
+   "spearman": 0.51
+  },
+  "education": {
+   "n": 2880,
+   "spearman": 0.353
+  }
+ },
+ "per_job_spearman": {
+  "accountant": 0.552,
+  "bi-analyst": 0.608,
+  "civil-engineer": 0.396,
+  "data-scientist": 0.485,
+  "devops": 0.754,
+  "digital-marketing": 0.515,
+  "graphic-designer": 0.462,
+  "hr-specialist": 0.557,
+  "java-backend": 0.745,
+  "netsec": 0.609,
+  "project-manager": 0.426,
+  "python-backend": 0.708,
+  "qa-engineer": 0.579,
+  "react-frontend": 0.612,
+  "sales-exec": 0.507,
+  "sap-consultant": 0.458,
+  "vi-ba": 0.552,
+  "vi-giao-vien": 0.388,
+  "vi-ke-toan": 0.567,
+  "vi-kinh-doanh": 0.495,
+  "vi-ky-su-dien": 0.456,
+  "vi-nhan-su": 0.512,
+  "vi-python-backend": 0.663,
+  "vi-reactjs": 0.691
+ },
+ "sonnet_crosscheck": {
+  "n": 292,
+  "spearman": 0.6386194640843736,
+  "auc_ge2": 0.8068240484347867,
+  "auc_ge3": 0.8818181818181817,
+  "ndcg5": 0.8845731264850145,
+  "mean_score_by_label": {
+   "0": 15.7,
+   "1": 30.2,
+   "2": 41.1,
+   "3": 66.4,
+   "4": 76.1
+  },
+  "spearman_ci95": [
+   0.56,
+   0.712
+  ]
+ },
+ "vs_AB_consensus_240": {},
+ "haiku_vs_AB_spearman_240": NaN
+}
