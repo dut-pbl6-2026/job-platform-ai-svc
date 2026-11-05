@@ -13,10 +13,24 @@ SCAN_SCALE = 1.0  # scale used for the hidden-text probe render (1 px per pt)
 
 
 def _page_text(page: "pymupdf.Page") -> tuple[str, int]:
-    """Visible text of a text-layer page and the number of characters removed as hidden."""
+    """Visible text of a text-layer page and the number of characters removed as hidden.
+
+    The probe render that hidden-text detection reads is capped at MAX_RENDER_SIDE_PX (a
+    14400x14400pt page would otherwise allocate a ~620 MB pixmap); the scale is tracked so
+    span bboxes map to the right pixels. Pages without text spans are not rendered at all
+    (they go straight to OCR, which renders them at the OCR DPI anyway).
+    """
     d = page.get_text("dict")
-    pix_obj = page.get_pixmap(matrix=pymupdf.Matrix(SCAN_SCALE, SCAN_SCALE), colorspace=pymupdf.csRGB, alpha=False)
-    pix = np.frombuffer(pix_obj.samples, dtype=np.uint8).reshape(pix_obj.height, pix_obj.width, 3)
+    has_spans = any(
+        block.get("type") == 0 and any(line.get("spans") for line in block.get("lines", []))
+        for block in d.get("blocks", [])
+    )
+    pix = scale = None
+    if has_spans:
+        w, h = page.rect.width, page.rect.height
+        scale = min(SCAN_SCALE, MAX_RENDER_SIDE_PX / max(w, h))
+        pix_obj = page.get_pixmap(matrix=pymupdf.Matrix(scale, scale), colorspace=pymupdf.csRGB, alpha=False)
+        pix = np.frombuffer(pix_obj.samples, dtype=np.uint8).reshape(pix_obj.height, pix_obj.width, 3)
     kept_lines: list[str] = []
     removed = 0
     for block in d.get("blocks", []):
@@ -25,7 +39,7 @@ def _page_text(page: "pymupdf.Page") -> tuple[str, int]:
         for line in block.get("lines", []):
             parts = []
             for span in line.get("spans", []):
-                if hidden.is_hidden_span(span, page.rect, pix, SCAN_SCALE):
+                if pix is None or hidden.is_hidden_span(span, page.rect, pix, scale):
                     removed += len(span.get("text", "").strip())
                 else:
                     parts.append(span["text"])

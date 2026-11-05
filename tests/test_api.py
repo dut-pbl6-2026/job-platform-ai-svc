@@ -75,6 +75,7 @@ def test_response_shape_and_meta(client):
 
 
 @needs_ocr
+@needs_ocr
 def test_scanned_cv_scores_like_text_cv(client):
     a = post(client, make_text_pdf(CV_TEXT)).json()["overall_score"]
     b = post(client, make_image_pdf(CV_TEXT)).json()

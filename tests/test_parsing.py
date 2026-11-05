@@ -1,10 +1,24 @@
 import pymupdf
 import pytest
 
-from app.errors import CvEncrypted, CvNoText, CvUnreadable, FileTooLarge, UnsupportedMedia
+from app.errors import (
+    CvEncrypted,
+    CvNoText,
+    CvUnreadable,
+    FileTooLarge,
+    UnsupportedMedia,
+    ZipBomb,
+)
 from app.parsing.ocr import ocr_available
 from app.parsing.parse import parse_cv
-from tests.conftest import CV_TEXT, make_docx, make_image_pdf, make_text_pdf
+from tests.conftest import (
+    CV_TEXT,
+    make_docx,
+    make_docx_dark_sidebar,
+    make_docx_hyperlink,
+    make_image_pdf,
+    make_text_pdf,
+)
 
 needs_ocr = pytest.mark.skipif(not ocr_available(), reason="tesseract not installed")
 
@@ -96,3 +110,41 @@ def test_error_cases(settings):
 def test_extension_is_ignored_content_decides(settings):
     p = parse_cv(make_docx([(CV_TEXT, {})]), settings)  # a DOCX regardless of the file name
     assert p.parser == "docx"
+
+def test_docx_white_text_on_dark_fill_is_kept(settings):
+    # A dark-sidebar template: white text on a dark fill is visible ink, not stuffing.
+    p = parse_cv(make_docx_dark_sidebar("SKILLS: Python, Django, PostgreSQL, Docker, Kubernetes"), settings)
+    low = p.text.lower()
+    assert "python" in low and "kubernetes" in low
+    assert not any(w.startswith("hidden") for w in p.warnings)
+
+
+def test_docx_hyperlink_and_textbox_text_is_not_lost(settings):
+    p = parse_cv(make_docx_hyperlink("github project using FastAPI and Redis"), settings)
+    low = p.text.lower()
+    assert "fastapi" in low and "redis" in low
+    assert "kubernetes" in low  # text box content
+
+
+def test_docx_zip_bomb_rejected(settings):
+    import io
+    import zipfile
+
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("word/document.xml", "x" * 2_000_000)  # ~2 MB that compresses to almost nothing
+        z.writestr("[Content_Types].xml", "<x/>")
+    data = buf.getvalue()
+    assert len(data) < settings.max_upload_bytes  # small on the wire, huge when expanded
+    with pytest.raises(ZipBomb):
+        parse_cv(data, settings)
+
+
+def test_huge_pdf_page_does_not_oom(settings):
+    # 14400x14400pt page: the probe render must stay capped, and the page is not OCR'd away.
+    doc = pymupdf.open()
+    page = doc.new_page(width=14400, height=14400)
+    page.insert_textbox(pymupdf.Rect(200, 200, 4000, 900), CV_TEXT, fontsize=22)
+    p = parse_cv(doc.tobytes(), settings)
+    assert "postgresql" in p.text.lower()
+

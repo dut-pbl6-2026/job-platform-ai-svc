@@ -35,6 +35,12 @@ class CvUnreadable(ApiError):
     status, code, title = 422, "cv_unreadable", "CV file is corrupt or unreadable"
 
 
+class ZipBomb(CvUnreadable):
+    """A DOCX whose uncompressed size or compression ratio is beyond what a CV can be."""
+
+    title = "The DOCX file is too large to read safely"
+
+
 class CvNoText(ApiError):
     status, code, title = 422, "cv_no_text", "No text could be extracted from the CV"
 
