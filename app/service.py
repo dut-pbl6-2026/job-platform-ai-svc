@@ -1,6 +1,7 @@
 """Orchestration: bytes + job dict -> score response. Synchronous and CPU-bound; run in a worker thread."""
 import hashlib
 import time
+import uuid
 from datetime import date
 
 from app.config import Settings
@@ -15,6 +16,14 @@ def cache_key(cv_bytes: bytes, job_id: str, job_version: str, lang: str = "", mo
     """Everything that changes the score: ruleset, fitted-parameter version, embedder, file, job, language."""
     h = hashlib.sha256(cv_bytes).hexdigest()
     return f"{scorer.RULESET}:{params}:{model}:{h}:{job_id}:{job_version}:{lang}"
+
+
+_SCORE_NS = uuid.UUID("6f1c8a52-3d0e-4b7a-9a61-2c5d7e90b4f3")
+
+
+def score_id_for(user_id: str, key: str) -> str:
+    """Same user + same file + same job (cache key) always gets the same id, so a re-score does not pile up records."""
+    return str(uuid.uuid5(_SCORE_NS, f"{user_id}:{key}"))
 
 
 def score_cv_bytes(cv_bytes: bytes, job: dict, settings: Settings, emb: Embedder, today: date | None = None, lang: str | None = None) -> dict:
