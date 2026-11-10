@@ -14,7 +14,7 @@ from app.auth import current_user
 from app.cache import ResultCache, connect
 from app.config import Settings, get_settings
 from app.embed import Embedder, HashingEmbedder, OnnxEmbedder
-from app.errors import ApiError, BadRequest, Busy, FileTooLarge, RateLimited
+from app.errors import ApiError, BadRequest, Busy, FileTooLarge, RateLimited, ScoreNotFound
 from app.job_client import JobClient
 from app.parsing.ocr import ocr_available
 from app.ratelimit import RateLimiter
@@ -116,6 +116,23 @@ def create_app(settings: Settings | None = None, embedder: Embedder | None = Non
             app.state.sem.release()
         await run_in_threadpool(app.state.cache.set, key, result)
         return await _remember(user, score_id, key, job_id.strip(), result)
+
+    async def _own_record(request: Request, score_id: str) -> tuple[str, dict]:
+        """Authenticate, validate the id, and load the caller's record. Anything else is 404."""
+        user = current_user(request, settings)
+        try:
+            score_id = str(uuid.UUID(score_id))  # canonical form only; nothing else is ever used as a Redis key
+        except ValueError:
+            raise BadRequest("scoreId must be a UUID.") from None
+        record = await run_in_threadpool(app.state.records.get, score_id)
+        if not record or record.get("owner") != user:
+            raise ScoreNotFound("No score with this id for the current user (it may have expired).")
+        return score_id, record
+
+    @app.get("/api/ai/score-resume/{score_id}")
+    async def get_score(request: Request, score_id: str):
+        score_id, record = await _own_record(request, score_id)
+        return {**record["result"], "score_id": score_id}
 
     return app
 

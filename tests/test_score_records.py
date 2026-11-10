@@ -90,3 +90,75 @@ def test_failure_to_store_the_record_does_not_fail_the_post(settings, emb, jobs)
 def test_post_without_identity_is_rejected_before_touching_redis(client, stub):
     r = client.post("/api/ai/score-resume", files={"cv_file": ("a.pdf", make_text_pdf(CV_TEXT))}, data={"job_id": JOB_ID})
     assert r.status_code == 401 and stub.commands == [] and stub.data == {}
+
+
+URL = "/api/ai/score-resume/"
+
+
+def test_owner_gets_the_stored_result_without_rescoring(client, jobs):
+    body = post(client, make_text_pdf(CV_TEXT)).json()
+    calls = jobs.calls
+    r = client.get(URL + body["score_id"], headers=as_user("u1"))
+    assert r.status_code == 200 and r.json() == body
+    assert jobs.calls == calls  # no job-svc call, so it works after the job is deleted
+
+
+def test_get_reflects_the_cached_flag_the_post_returned(client):
+    cv = make_text_pdf(CV_TEXT)
+    first = post(client, cv).json()
+    assert client.get(URL + first["score_id"], headers=as_user("u1")).json()["meta"]["cached"] is False
+    second = post(client, cv).json()
+    assert second["meta"]["cached"] is True
+    assert client.get(URL + second["score_id"], headers=as_user("u1")).json()["meta"]["cached"] is True
+
+
+def test_another_user_gets_404_and_the_record_survives(client, stub):
+    body = post(client, make_text_pdf(CV_TEXT)).json()
+    r = client.get(URL + body["score_id"], headers=as_user("u2"))
+    assert r.status_code == 404 and r.json()["code"] == "score_not_found"
+    assert r.headers["content-type"].startswith("application/problem+json")
+    assert REC + body["score_id"] in stub.data
+    assert client.get(URL + body["score_id"], headers=as_user("u1")).status_code == 200
+
+
+def test_unknown_and_expired_ids_are_the_same_404(client, stub):
+    unknown = client.get(URL + str(uuid.uuid4()), headers=as_user("u1"))
+    body = post(client, make_text_pdf(CV_TEXT)).json()
+    stub.expire_all()
+    expired = client.get(URL + body["score_id"], headers=as_user("u1"))
+    assert unknown.status_code == expired.status_code == 404
+    assert unknown.json()["code"] == expired.json()["code"] == "score_not_found"
+
+
+@pytest.mark.parametrize("bad", ["abc", "*", "ai:score:x", "x" * 300, "%2A", "..%2Fx"])
+def test_malformed_ids_never_reach_redis(client, stub, bad):
+    post(client, make_text_pdf(CV_TEXT))
+    before = list(stub.commands)
+    r = client.get(URL + bad, headers=as_user("u1"))
+    assert r.status_code in (400, 404) and r.status_code != 200
+    if "%2F" not in bad:
+        assert r.status_code == 400 and r.json()["code"] == "bad_request"
+    assert stub.commands == before
+
+
+def test_get_requires_identity(client, stub):
+    body = post(client, make_text_pdf(CV_TEXT)).json()
+    before = list(stub.commands)
+    r = client.get(URL + body["score_id"])
+    assert r.status_code == 401 and r.json()["code"] == "unauthorized" and stub.commands == before
+
+
+def test_get_works_from_memory_while_redis_is_down(settings, emb, jobs):
+    stub = StubRedis()
+    stub.down = True
+    with TestClient(create_app(settings, emb, jobs, redis_client=stub)) as c:
+        body = post(c, make_text_pdf(CV_TEXT)).json()
+        assert c.get(URL + body["score_id"], headers=as_user("u1")).json() == body
+
+
+def test_get_is_not_rate_limited(settings, emb, jobs):
+    s = settings.model_copy(update={"rate_limit_per_min": 1})
+    with TestClient(create_app(s, emb, jobs, redis_client=StubRedis())) as c:
+        body = post(c, make_text_pdf(CV_TEXT)).json()
+        assert post(c, make_text_pdf(CV_TEXT)).status_code == 429
+        assert all(c.get(URL + body["score_id"], headers=as_user("u1")).status_code == 200 for _ in range(5))
