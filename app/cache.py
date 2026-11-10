@@ -3,8 +3,77 @@ import json
 import logging
 import time
 from collections import OrderedDict
+from urllib.parse import unquote
 
 log = logging.getLogger("ai.cache")
+
+
+def _bad(what: str) -> ValueError:
+    # Never echo the value: it carries the Redis password.
+    return ValueError(f"REDIS_URL is invalid: {what}")
+
+
+def _port(text: str) -> int:
+    if not text.isdigit() or not 0 < int(text) < 65536:
+        raise _bad("port must be a number between 1 and 65535")
+    return int(text)
+
+
+def redis_kwargs(value: str) -> dict:
+    """Keyword arguments for ``redis.Redis`` from either flavour of ``REDIS_URL``.
+
+    ``redis://[user:pass@]host[:port][/db]`` / ``rediss://...``, or the StackExchange.Redis string the .NET
+    services share: ``host[:port][,password=..][,user=..][,ssl=true][,defaultDatabase=n]`` (keys are
+    case-insensitive, unknown keys are ignored). Errors never contain the value.
+    """
+    value = value.strip()
+    out = {"host": "", "port": 6379, "db": 0, "username": None, "password": None, "ssl": False}
+    if "://" in value:
+        scheme, _, rest = value.partition("://")
+        if scheme.lower() not in ("redis", "rediss"):
+            raise _bad("scheme must be redis or rediss")
+        out["ssl"] = scheme.lower() == "rediss"
+        auth, at, hostpart = rest.rpartition("@")
+        if at:
+            user, colon, password = auth.partition(":")
+            out["username"] = unquote(user) or None
+            out["password"] = unquote(password) if colon else None
+        hostport, _, path = hostpart.partition("/")
+        host, colon, port = hostport.rpartition(":")
+        if not colon:
+            host, port = hostport, ""
+        if port:
+            out["port"] = _port(port)
+        if path:
+            if not path.isdigit():
+                raise _bad("database must be a number")
+            out["db"] = int(path)
+    else:
+        head, *options = value.split(",")
+        host, colon, port = head.strip().rpartition(":")
+        if not colon:
+            host, port = head.strip(), ""
+        if port:
+            out["port"] = _port(port)
+        for option in options:
+            key, eq, val = option.partition("=")
+            if not eq:
+                continue
+            key, val = key.strip().lower(), val.strip()
+            if key == "password":
+                out["password"] = val or None
+            elif key == "user":
+                out["username"] = val or None
+            elif key == "ssl":
+                out["ssl"] = val.lower() == "true"
+            elif key == "defaultdatabase":
+                if not val.isdigit():
+                    raise _bad("defaultDatabase must be a number")
+                out["db"] = int(val)
+    if not host.strip():
+        raise _bad("host is missing")
+    out["host"] = host.strip()
+    return out
 
 
 class ResultCache:
@@ -17,8 +86,7 @@ class ResultCache:
             try:
                 import redis
 
-                url = redis_url if "://" in redis_url else f"redis://{redis_url}"
-                self._redis = redis.Redis.from_url(url, socket_timeout=1.0, socket_connect_timeout=1.0)
+                self._redis = redis.Redis(**redis_kwargs(redis_url), socket_timeout=1.0, socket_connect_timeout=1.0)
                 self._redis.ping()
             except Exception as exc:  # noqa: BLE001
                 log.warning("Redis unavailable (%s); using in-process cache", type(exc).__name__)
