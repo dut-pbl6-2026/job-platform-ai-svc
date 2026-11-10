@@ -59,6 +59,97 @@ def test_stackexchange_style_url_reaches_redis(monkeypatch):
     assert built[0]["host"] == "redis" and built[0]["password"] == "x"
 
 
+class StubRedis:
+    """In-memory stand-in for the few Redis commands the cache uses. `down` makes every command raise."""
+
+    def __init__(self):
+        self.data: dict[str, str] = {}
+        self.ttls: dict[str, int] = {}
+        self.plain_sets: list[str] = []  # SET without expiry: must stay empty
+        self.down = False
+
+    def _check(self):
+        if self.down:
+            raise redis.ConnectionError("down")
+
+    def ping(self):
+        self._check()
+        return True
+
+    def get(self, key):
+        self._check()
+        return self.data.get(key)
+
+    def setex(self, key, ttl, value):
+        self._check()
+        self.data[key] = value
+        self.ttls[key] = ttl
+
+    def set(self, key, value, *args, **kwargs):
+        self.plain_sets.append(key)
+        self.data[key] = value
+
+
+class Clock:
+    def __init__(self):
+        self.now = 1000.0
+
+    def __call__(self):
+        return self.now
+
+
+def test_writes_use_setex_with_the_ttl_and_prefix():
+    stub = StubRedis()
+    cache = ResultCache(ttl=86400, client=stub)
+    cache.set("abc", {"overall_score": 80})
+    assert cache.backend == "redis"
+    assert stub.ttls == {"ai:score:abc": 86400} and stub.plain_sets == []
+    assert cache.get("abc") == {"overall_score": 80}
+    assert cache.get("missing") is None
+
+
+def test_redis_errors_fall_back_to_memory_then_recover_after_30_seconds():
+    stub, clock = StubRedis(), Clock()
+    cache = ResultCache(client=stub, clock=clock)
+    stub.down = True
+    cache.set("k", {"v": 1})  # write fails -> memory
+    assert cache.backend == "memory"
+    assert cache.get("k") == {"v": 1}  # served from memory while Redis is down
+    clock.now += 29
+    assert cache.backend == "memory"  # not retried yet
+    stub.down = False
+    clock.now += 2  # 31 s after the failure
+    assert cache.backend == "redis"
+    cache.set("k2", {"v": 2})
+    assert "ai:score:k2" in stub.data
+
+
+def test_read_error_also_falls_back():
+    stub, clock = StubRedis(), Clock()
+    cache = ResultCache(client=stub, clock=clock)
+    stub.down = True
+    assert cache.get("k") is None
+    assert cache.backend == "memory"
+
+
+def test_redis_down_at_start_is_retried():
+    stub, clock = StubRedis(), Clock()
+    stub.down = True
+    cache = ResultCache(client=stub, clock=clock)
+    assert cache.backend == "memory"
+    stub.down = False
+    clock.now += 31
+    assert cache.backend == "redis"
+
+
+def test_memory_entries_expire():
+    clock = Clock()
+    cache = ResultCache(ttl=10, clock=clock)
+    cache.set("k", {"v": 1})
+    clock.now += 11
+    assert cache.get("k") is None
+
+
 def test_invalid_redis_url_falls_back_to_memory_and_logs_no_secret(caplog):
     with caplog.at_level("WARNING"):
         cache = ResultCache("h:abc,password=hunter2")
