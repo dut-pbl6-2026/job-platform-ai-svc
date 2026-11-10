@@ -17,6 +17,7 @@ from app.errors import ApiError, BadRequest, Busy, FileTooLarge, RateLimited
 from app.job_client import JobClient
 from app.parsing.ocr import ocr_available
 from app.ratelimit import RateLimiter
+from app.scoring import scorer
 
 log = logging.getLogger("ai")
 _LEVELS = {"TRACE": "DEBUG", "DEBUG": "DEBUG", "INFORMATION": "INFO", "INFO": "INFO", "WARNING": "WARNING", "WARN": "WARNING", "ERROR": "ERROR", "CRITICAL": "CRITICAL"}
@@ -89,7 +90,7 @@ def create_app(settings: Settings | None = None, embedder: Embedder | None = Non
             raise BadRequest("job_id must be a UUID.") from None
         job = await app.state.jobs.get(job_id.strip())
         lang = lang.strip().lower() if lang and lang.strip().lower() in ("vi", "en") else None
-        key = service.cache_key(data, job_id.strip(), str(job.get("updatedAt", "")), lang or "")
+        key = service.cache_key(data, job_id.strip(), str(job.get("updatedAt", "")), lang or "", app.state.embedder.name, scorer.load_params().version)
         cached = app.state.cache.get(key)
         if cached:
             cached["meta"]["cached"] = True

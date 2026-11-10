@@ -53,6 +53,17 @@ def post(client, data, job_id=JOB_ID, name="cv.pdf", headers=None):
     return client.post("/api/ai/score-resume", files={"cv_file": (name, data)}, data={"job_id": job_id}, headers={"X-User-Id": "u1", **(headers or {})})
 
 
+def test_cache_key_depends_on_model_and_params():
+    from app import service
+
+    base = {"cv_bytes": b"cv", "job_id": JOB_ID, "job_version": "v1", "lang": "en"}
+    key = service.cache_key(**base, model="minilm", params="2026-01")
+    assert key == service.cache_key(**base, model="minilm", params="2026-01")
+    assert key != service.cache_key(**base, model="hashing-256", params="2026-01")  # fallback embedder must not share entries
+    assert key != service.cache_key(**base, model="minilm", params="2026-02")
+    assert key != service.cache_key(**{**base, "job_version": "v2"}, model="minilm", params="2026-01")
+
+
 def test_health(client):
     r = client.get("/health").json()
     assert r["status"] == "ok" and r["models_loaded"]
