@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 from app import service
 from app.auth import current_user
@@ -133,6 +133,14 @@ def create_app(settings: Settings | None = None, embedder: Embedder | None = Non
     async def get_score(request: Request, score_id: str):
         score_id, record = await _own_record(request, score_id)
         return {**record["result"], "score_id": score_id}
+
+    @app.delete("/api/ai/score-resume/{score_id}", status_code=204)
+    async def delete_score(request: Request, score_id: str):
+        score_id, record = await _own_record(request, score_id)
+        # the record and the shared 24 h entry for the same file: "delete" must leave nothing derived from the CV
+        await run_in_threadpool(app.state.records.delete, score_id)
+        await run_in_threadpool(app.state.cache.delete, record["cache_key"])
+        return Response(status_code=204)
 
     return app
 

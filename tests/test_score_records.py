@@ -162,3 +162,57 @@ def test_get_is_not_rate_limited(settings, emb, jobs):
         body = post(c, make_text_pdf(CV_TEXT)).json()
         assert post(c, make_text_pdf(CV_TEXT)).status_code == 429
         assert all(c.get(URL + body["score_id"], headers=as_user("u1")).status_code == 200 for _ in range(5))
+
+
+def test_delete_removes_the_record_and_the_shared_cache_entry(client, stub):
+    cv = make_text_pdf(CV_TEXT)
+    body = post(client, cv).json()
+    assert any(k.startswith(SHARED) for k in stub.data)
+    r = client.delete(URL + body["score_id"], headers=as_user("u1"))
+    assert r.status_code == 204 and r.content == b""
+    assert stub.data == {}  # both keys are gone from Redis
+    assert client.get(URL + body["score_id"], headers=as_user("u1")).status_code == 404
+    assert client.delete(URL + body["score_id"], headers=as_user("u1")).status_code == 404
+    assert post(client, cv).json()["meta"]["cached"] is False  # nothing derived from the file was left behind
+
+
+def test_another_user_cannot_delete_and_nothing_is_removed(client, stub):
+    body = post(client, make_text_pdf(CV_TEXT)).json()
+    before = dict(stub.data)
+    r = client.delete(URL + body["score_id"], headers=as_user("u2"))
+    assert r.status_code == 404 and r.json()["code"] == "score_not_found"
+    assert stub.data == before
+    assert client.get(URL + body["score_id"], headers=as_user("u1")).status_code == 200
+
+
+def test_deleting_one_users_score_leaves_the_other_users_record(client, stub):
+    cv = make_text_pdf(CV_TEXT)
+    a = post(client, cv).json()
+    b = post(client, cv, headers=as_user("u2")).json()
+    assert b["meta"]["cached"] is True and a["score_id"] != b["score_id"]  # u2 hit the shared cache
+    assert client.delete(URL + a["score_id"], headers=as_user("u1")).status_code == 204
+    assert client.get(URL + b["score_id"], headers=as_user("u2")).status_code == 200
+
+
+@pytest.mark.parametrize("bad", ["abc", "*", "ai:score:x"])
+def test_delete_malformed_id_never_reaches_redis(client, stub, bad):
+    post(client, make_text_pdf(CV_TEXT))
+    before = list(stub.commands)
+    r = client.delete(URL + bad, headers=as_user("u1"))
+    assert r.status_code == 400 and r.json()["code"] == "bad_request" and stub.commands == before
+
+
+def test_delete_requires_identity(client, stub):
+    body = post(client, make_text_pdf(CV_TEXT)).json()
+    before = dict(stub.data)
+    r = client.delete(URL + body["score_id"])
+    assert r.status_code == 401 and stub.data == before
+
+
+def test_delete_during_a_redis_outage_clears_memory(settings, emb, jobs):
+    stub = StubRedis()
+    stub.down = True
+    with TestClient(create_app(settings, emb, jobs, redis_client=stub)) as c:
+        body = post(c, make_text_pdf(CV_TEXT)).json()
+        assert c.delete(URL + body["score_id"], headers=as_user("u1")).status_code == 204
+        assert c.get(URL + body["score_id"], headers=as_user("u1")).status_code == 404
