@@ -98,8 +98,9 @@ class ResultCache:
     comes up later (or recovers) is picked up without a restart. Calls are blocking: run them in a worker thread.
     """
 
-    def __init__(self, redis_url: str = "", ttl: int = 86400, max_items: int = 512, *, client=None, clock: Callable[[], float] = time.time, retry_seconds: float = 30.0):
+    def __init__(self, redis_url: str = "", ttl: int = 86400, max_items: int = 512, *, prefix: str = "ai:score:", client=None, clock: Callable[[], float] = time.time, retry_seconds: float = 30.0):
         self.ttl = ttl
+        self._prefix = prefix
         self._mem: OrderedDict[str, tuple[float, str]] = OrderedDict()
         self._lock = threading.Lock()
         self._max = max_items
@@ -146,7 +147,7 @@ class ResultCache:
         client = self._redis()
         if client is not None:
             try:
-                raw = client.get(f"ai:score:{key}")
+                raw = client.get(f"{self._prefix}{key}")
                 return json.loads(raw) if raw else None
             except Exception as exc:  # noqa: BLE001
                 self._mark_down(exc)
@@ -163,7 +164,7 @@ class ResultCache:
         client = self._redis()
         if client is not None:
             try:
-                client.setex(f"ai:score:{key}", self.ttl, raw)
+                client.setex(f"{self._prefix}{key}", self.ttl, raw)
                 return
             except Exception as exc:  # noqa: BLE001
                 self._mark_down(exc)
@@ -172,3 +173,14 @@ class ResultCache:
             self._mem.move_to_end(key)
             while len(self._mem) > self._max:
                 self._mem.popitem(last=False)
+
+    def delete(self, key: str) -> None:
+        """Remove ``key`` from Redis (when reachable) and from memory."""
+        client = self._redis()
+        if client is not None:
+            try:
+                client.delete(f"{self._prefix}{key}")
+            except Exception as exc:  # noqa: BLE001
+                self._mark_down(exc)
+        with self._lock:
+            self._mem.pop(key, None)

@@ -66,6 +66,7 @@ class StubRedis:
         self.data: dict[str, str] = {}
         self.ttls: dict[str, int] = {}
         self.plain_sets: list[str] = []  # SET without expiry: must stay empty
+        self.commands: list[tuple] = []  # every data command received, to prove a request never reached Redis
         self.down = False
 
     def _check(self):
@@ -77,17 +78,29 @@ class StubRedis:
         return True
 
     def get(self, key):
+        self.commands.append(("get", key))
         self._check()
         return self.data.get(key)
 
     def setex(self, key, ttl, value):
+        self.commands.append(("setex", key))
         self._check()
         self.data[key] = value
         self.ttls[key] = ttl
 
+    def delete(self, *keys):
+        self.commands.append(("delete", *keys))
+        self._check()
+        return sum(self.data.pop(k, None) is not None for k in keys)
+
     def set(self, key, value, *args, **kwargs):
         self.plain_sets.append(key)
         self.data[key] = value
+
+    def expire_all(self):
+        """What Redis does when every TTL has run out."""
+        self.data.clear()
+        self.ttls.clear()
 
 
 class Clock:
@@ -140,6 +153,32 @@ def test_redis_down_at_start_is_retried():
     stub.down = False
     clock.now += 31
     assert cache.backend == "redis"
+
+
+def test_prefix_and_delete():
+    stub = StubRedis()
+    cache = ResultCache(ttl=60, client=stub, prefix="ai:scorerec:")
+    cache.set("id1", {"v": 1})
+    assert list(stub.data) == ["ai:scorerec:id1"] and stub.ttls["ai:scorerec:id1"] == 60
+    cache.delete("id1")
+    assert stub.data == {} and cache.get("id1") is None
+
+
+def test_delete_removes_the_memory_copy_too():
+    cache = ResultCache()
+    cache.set("k", {"v": 1})
+    cache.delete("k")
+    cache.delete("never-there")  # no error
+    assert cache.get("k") is None
+
+
+def test_delete_during_an_outage_still_clears_memory():
+    stub, clock = StubRedis(), Clock()
+    cache = ResultCache(client=stub, clock=clock)
+    stub.down = True
+    cache.set("k", {"v": 1})  # lands in memory
+    cache.delete("k")
+    assert cache.get("k") is None
 
 
 def test_memory_entries_expire():

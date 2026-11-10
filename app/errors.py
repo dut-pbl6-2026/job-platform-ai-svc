@@ -19,6 +19,12 @@ class JobNotFound(ApiError):
     status, code, title = 404, "job_not_found", "Job not found"
 
 
+class ScoreNotFound(ApiError):
+    """Missing, expired and somebody else's score all look the same, so ids cannot be probed."""
+
+    status, code, title = 404, "score_not_found", "Score not found"
+
+
 class FileTooLarge(ApiError):
     status, code, title = 413, "file_too_large", "File too large"
 
