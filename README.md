@@ -27,7 +27,11 @@ Runtime footprint (measured, MiniLM + Tesseract): ~830 MB resident, ~900 MB peak
 
 ## Configuration (env)
 
-`PORT` (6000) · `JOB_SERVICE_URL` · `REDIS_URL` (optional; falls back to in-process LRU) · `JWT_SECRET/ISSUER/AUDIENCE` · `OCR_CONCURRENCY` (2) · `OCR_DPI` (200) · `MAX_UPLOAD_BYTES` (5 MB) · `MAX_PAGES` (5) · `RATE_LIMIT_PER_MIN` (10 per user) · `LOG_LEVEL` (accepts `Information` or `INFO`) · `EMBEDDING_CACHE_DIR` (models)
+`PORT` (6000) · `JOB_SERVICE_URL` · `REDIS_URL` (optional, either `redis://[:password@]host:6379/0` / `rediss://…` or the StackExchange form the .NET services share, `host:6379,password=…[,ssl=true][,defaultDatabase=1]`; unset or unreachable → in-process LRU, Redis is retried every 30 s) · `CACHE_TTL_SECONDS` (86400) · `JWT_SECRET/ISSUER/AUDIENCE` · `OCR_CONCURRENCY` (2) · `OCR_DPI` (200) · `MAX_UPLOAD_BYTES` (5 MB) · `MAX_PAGES` (5) · `RATE_LIMIT_PER_MIN` (10 per user) · `LOG_LEVEL` (accepts `Information` or `INFO`) · `EMBEDDING_CACHE_DIR` (models)
+
+## Score cache
+
+A scored response is cached for 24 h under `ai:score:{ruleset}:{params version}:{embedder}:{sha256(file)}:{job id}:{job version}:{lang}`, so a different embedder (for example the hashing fallback when the model fails to load), a refit of `data/model_params.json` or an edited job never reuses an old score. Only the response is stored, never the CV file or its text. `/health` reports `"cache": "redis"` or `"memory"`.
 
 ## Layout
 

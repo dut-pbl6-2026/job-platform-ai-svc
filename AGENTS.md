@@ -4,7 +4,7 @@
 
 ## Hard constraints
 - **No third-party AI/LLM API** (supervisor requirement). Only local models/rules. Never add OpenAI/Gemini/Anthropic clients or keys.
-- CV text is PII: never log it, never persist it; only the score result is cached (Redis/LRU, 24 h, key = ruleset + sha256(cv) + job id + job version).
+- CV text is PII: never log it, never persist it; only the score result is cached (Redis/LRU, 24 h, key = ruleset + params version + embedder name + sha256(cv) + job id + job version + lang). `REDIS_URL` accepts `redis://…` and the StackExchange form `host:port,password=…` shared with the .NET services; on a Redis error the cache uses memory and retries after 30 s. Never log the connection string (redis-py errors can contain the password).
 - No literals for URLs/secrets/ports in code — read from env (`app/config.py`).
 
 ## Commands (mise)

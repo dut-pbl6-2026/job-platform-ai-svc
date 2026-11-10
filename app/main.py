@@ -17,6 +17,7 @@ from app.errors import ApiError, BadRequest, Busy, FileTooLarge, RateLimited
 from app.job_client import JobClient
 from app.parsing.ocr import ocr_available
 from app.ratelimit import RateLimiter
+from app.scoring import scorer
 
 log = logging.getLogger("ai")
 _LEVELS = {"TRACE": "DEBUG", "DEBUG": "DEBUG", "INFORMATION": "INFO", "INFO": "INFO", "WARNING": "WARNING", "WARN": "WARNING", "ERROR": "ERROR", "CRITICAL": "CRITICAL"}
@@ -37,7 +38,7 @@ def build_embedder(settings: Settings) -> Embedder:
         return HashingEmbedder()
 
 
-def create_app(settings: Settings | None = None, embedder: Embedder | None = None, job_client: JobClient | None = None) -> FastAPI:
+def create_app(settings: Settings | None = None, embedder: Embedder | None = None, job_client: JobClient | None = None, redis_client=None) -> FastAPI:
     settings = settings or get_settings()
     logging.basicConfig(level=log_level(settings.log_level))
 
@@ -45,7 +46,7 @@ def create_app(settings: Settings | None = None, embedder: Embedder | None = Non
     async def lifespan(app: FastAPI):
         app.state.embedder = embedder or await run_in_threadpool(build_embedder, settings)
         app.state.jobs = job_client or JobClient(settings.job_service_url, settings.job_http_timeout_seconds, settings.job_cache_ttl_seconds)
-        app.state.cache = ResultCache(settings.redis_url, settings.cache_ttl_seconds)
+        app.state.cache = await run_in_threadpool(ResultCache, settings.redis_url, settings.cache_ttl_seconds, client=redis_client)
         app.state.limiter = RateLimiter(settings.rate_limit_per_min)
         app.state.sem = asyncio.Semaphore(settings.ocr_concurrency)
         yield
@@ -89,8 +90,8 @@ def create_app(settings: Settings | None = None, embedder: Embedder | None = Non
             raise BadRequest("job_id must be a UUID.") from None
         job = await app.state.jobs.get(job_id.strip())
         lang = lang.strip().lower() if lang and lang.strip().lower() in ("vi", "en") else None
-        key = service.cache_key(data, job_id.strip(), str(job.get("updatedAt", "")), lang or "")
-        cached = app.state.cache.get(key)
+        key = service.cache_key(data, job_id.strip(), str(job.get("updatedAt", "")), lang or "", app.state.embedder.name, scorer.load_params().version)
+        cached = await run_in_threadpool(app.state.cache.get, key)
         if cached:
             cached["meta"]["cached"] = True
             return cached
@@ -102,7 +103,7 @@ def create_app(settings: Settings | None = None, embedder: Embedder | None = Non
             result = await run_in_threadpool(service.score_cv_bytes, data, job, settings, app.state.embedder, None, lang)
         finally:
             app.state.sem.release()
-        app.state.cache.set(key, result)
+        await run_in_threadpool(app.state.cache.set, key, result)
         return result
 
     return app
