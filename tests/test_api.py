@@ -53,6 +53,42 @@ def post(client, data, job_id=JOB_ID, name="cv.pdf", headers=None):
     return client.post("/api/ai/score-resume", files={"cv_file": (name, data)}, data={"job_id": job_id}, headers={"X-User-Id": "u1", **(headers or {})})
 
 
+def test_cache_key_depends_on_model_and_params():
+    from app import service
+
+    base = {"cv_bytes": b"cv", "job_id": JOB_ID, "job_version": "v1", "lang": "en"}
+    key = service.cache_key(**base, model="minilm", params="2026-01")
+    assert key == service.cache_key(**base, model="minilm", params="2026-01")
+    assert key != service.cache_key(**base, model="hashing-256", params="2026-01")  # fallback embedder must not share entries
+    assert key != service.cache_key(**base, model="minilm", params="2026-02")
+    assert key != service.cache_key(**{**base, "job_version": "v2"}, model="minilm", params="2026-01")
+
+
+def test_score_is_cached_in_redis_with_a_24h_ttl_and_a_versioned_key(settings, emb):
+    from tests.test_cache import StubRedis
+
+    stub = StubRedis()
+    with TestClient(create_app(settings, emb, FakeJobs(), redis_client=stub)) as c:
+        assert c.get("/health").json()["cache"] == "redis"
+        data = make_text_pdf(CV_TEXT)
+        assert post(c, data).json()["meta"]["cached"] is False
+        assert post(c, data).json()["meta"]["cached"] is True
+    (key,) = stub.data
+    assert key.startswith("ai:score:") and emb.name in key and stub.ttls[key] == 86400 and stub.plain_sets == []
+
+
+def test_redis_outage_does_not_fail_scoring(settings, emb):
+    from tests.test_cache import StubRedis
+
+    stub = StubRedis()
+    stub.down = True
+    with TestClient(create_app(settings, emb, FakeJobs(), redis_client=stub)) as c:
+        data = make_text_pdf(CV_TEXT)
+        assert post(c, data).status_code == 200
+        assert post(c, data).json()["meta"]["cached"] is True  # memory fallback
+        assert c.get("/health").json()["cache"] == "memory"
+
+
 def test_health(client):
     r = client.get("/health").json()
     assert r["status"] == "ok" and r["models_loaded"]

@@ -11,9 +11,10 @@ from app.scoring.specs import build_cv_spec, build_job_spec
 from app.scoring.suggest import hidden_text_suggestion
 
 
-def cache_key(cv_bytes: bytes, job_id: str, job_version: str, lang: str = "") -> str:
+def cache_key(cv_bytes: bytes, job_id: str, job_version: str, lang: str = "", model: str = "", params: str = "") -> str:
+    """Everything that changes the score: ruleset, fitted-parameter version, embedder, file, job, language."""
     h = hashlib.sha256(cv_bytes).hexdigest()
-    return f"{scorer.RULESET}:{h}:{job_id}:{job_version}:{lang}"
+    return f"{scorer.RULESET}:{params}:{model}:{h}:{job_id}:{job_version}:{lang}"
 
 
 def score_cv_bytes(cv_bytes: bytes, job: dict, settings: Settings, emb: Embedder, today: date | None = None, lang: str | None = None) -> dict:
