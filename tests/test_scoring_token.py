@@ -5,7 +5,6 @@ and still subject to the global concurrency semaphore.
 """
 import hmac
 
-import jwt
 import pytest
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
@@ -24,11 +23,11 @@ from app.auth import (
 from app.config import Settings
 from app.main import create_app
 from tests.conftest import CV_TEXT, SEARCH_KEY, make_text_pdf
+from tests.jwks_support import METADATA_URL, sign
 from tests.test_api import JOB_ID, FakeJobs
 from tests.test_chat_api import FakeSearch
 from tests.test_security_api import PROTECTED, fill
 
-SECRET = "s" * 40
 SCORING = "t" * 40  # distinct from SECRET
 DEV = {"dev_auth_enabled": True, "environment": "Development"}
 
@@ -39,7 +38,7 @@ def request(headers: dict[str, str] | None = None) -> Request:
 
 
 def user_token(sub: str = "alice") -> str:
-    return jwt.encode({"sub": sub, "iss": "job-platform", "aud": "job-platform", "exp": 4102444800}, SECRET, algorithm="HS256")
+    return sign({"sub": sub, "iss": "job-platform", "aud": "job-platform", "exp": 4102444800})
 
 
 # --- unit: startup policy ---------------------------------------------------
@@ -47,27 +46,27 @@ def user_token(sub: str = "alice") -> str:
 @pytest.mark.parametrize(
     "kwargs",
     [
-        {"jwt_secret": SECRET, "ai_scoring_service_token": "t" * 32},  # exactly the minimum, Production
-        {"jwt_secret": SECRET, "ai_scoring_service_token": "t" * 8, **DEV},  # short is tolerated outside Production
-        {"jwt_secret": SECRET},  # unset
-        {"jwt_secret": SECRET, "ai_scoring_service_token": ""},  # empty is the same as unset
+        {"jwt_metadata_address": METADATA_URL, "ai_scoring_service_token": "t" * 32},  # exactly the minimum, Production
+        {"jwt_metadata_address": METADATA_URL, "ai_scoring_service_token": "t" * 8, **DEV},  # short is tolerated outside Production
+        {"jwt_metadata_address": METADATA_URL},  # unset
+        {"jwt_metadata_address": METADATA_URL, "ai_scoring_service_token": ""},  # empty is the same as unset
     ],
 )
 def test_scoring_token_policy_allows_valid_configurations(kwargs):
     validate_auth(Settings(**{"ai_internal_token_for_search": SEARCH_KEY, **kwargs}))
 
 
-def test_short_scoring_token_refuses_to_start_in_production_even_with_a_valid_jwt_secret():
+def test_short_scoring_token_refuses_to_start_in_production_even_with_a_configured_jwks():
     # the JWT branch returns early, so the token check must run before it
-    settings = Settings(jwt_secret=SECRET, ai_scoring_service_token="t" * 31)
+    settings = Settings(jwt_metadata_address=METADATA_URL, ai_scoring_service_token="t" * 31)
     with pytest.raises(AuthConfigError, match="AI_SCORING_SERVICE_TOKEN") as info:
         validate_auth(settings)
     assert "t" * 31 not in str(info.value)  # errors never echo the value
 
 
-def test_short_scoring_token_refuses_to_start_in_production_without_a_jwt_secret_too():
+def test_short_scoring_token_refuses_to_start_in_production_without_a_jwks_address_too():
     with pytest.raises(AuthConfigError, match="AI_SCORING_SERVICE_TOKEN"):
-        validate_auth(Settings(jwt_secret="", ai_scoring_service_token="short"))
+        validate_auth(Settings(jwt_metadata_address="", ai_scoring_service_token="short"))
 
 
 # --- unit: token matching ---------------------------------------------------
@@ -106,24 +105,24 @@ def test_comparison_is_done_on_sha256_digests_with_compare_digest(monkeypatch):
 # --- unit: identity per route ----------------------------------------------
 
 def test_scoring_caller_is_the_scoring_subject_and_bypasses_nothing_else():
-    settings = Settings(jwt_secret=SECRET, ai_scoring_service_token=SCORING)
+    settings = Settings(jwt_metadata_address=METADATA_URL, ai_scoring_service_token=SCORING)
     assert scoring_caller(request({"Authorization": f"Bearer {SCORING}"}), settings) == Caller(SCORING_SUBJECT, scoring_service=True)
 
 
 def test_scoring_route_still_accepts_a_user_jwt_as_a_normal_user():
-    settings = Settings(jwt_secret=SECRET, ai_scoring_service_token=SCORING)
+    settings = Settings(jwt_metadata_address=METADATA_URL, ai_scoring_service_token=SCORING)
     caller = scoring_caller(request({"Authorization": f"Bearer {user_token('alice')}"}), settings)
     assert caller == Caller("alice", scoring_service=False)
 
 
 def test_a_user_whose_subject_is_the_scoring_name_is_not_the_scoring_service():
-    settings = Settings(jwt_secret=SECRET, ai_scoring_service_token=SCORING)
+    settings = Settings(jwt_metadata_address=METADATA_URL, ai_scoring_service_token=SCORING)
     caller = scoring_caller(request({"Authorization": f"Bearer {user_token(SCORING_SUBJECT)}"}), settings)
     assert caller.scoring_service is False
 
 
 @pytest.mark.parametrize("settings", [
-    Settings(jwt_secret=SECRET, ai_scoring_service_token=SCORING),
+    Settings(jwt_metadata_address=METADATA_URL, ai_scoring_service_token=SCORING),
     Settings(ai_scoring_service_token=SCORING, **DEV),
 ])
 def test_scoring_token_is_refused_as_a_user_identity_on_every_other_route(settings):
@@ -135,14 +134,14 @@ def test_scoring_token_is_refused_as_a_user_identity_on_every_other_route(settin
 
 
 def test_wrong_token_on_the_scoring_route_is_401_in_jwt_mode():
-    settings = Settings(jwt_secret=SECRET, ai_scoring_service_token=SCORING)
+    settings = Settings(jwt_metadata_address=METADATA_URL, ai_scoring_service_token=SCORING)
     with pytest.raises(HTTPException) as info:
         scoring_caller(request({"Authorization": "Bearer nope"}), settings)
     assert info.value.status_code == 401
 
 
 def test_unset_or_empty_token_never_authenticates_anything():
-    for settings in (Settings(**DEV), Settings(jwt_secret=SECRET), Settings(jwt_secret=SECRET, ai_scoring_service_token="")):
+    for settings in (Settings(**DEV), Settings(jwt_metadata_address=METADATA_URL), Settings(jwt_metadata_address=METADATA_URL, ai_scoring_service_token="")):
         with pytest.raises(HTTPException) as info:
             scoring_caller(request({"Authorization": "Bearer "}), settings)
         assert info.value.status_code == 401
@@ -156,7 +155,7 @@ def make_client(settings, emb):
 
 @pytest.fixture
 def scoring_settings() -> Settings:
-    return Settings(jwt_secret=SECRET, ai_scoring_service_token=SCORING, ai_internal_token_for_search=SEARCH_KEY, redis_url="", job_service_url="http://job.test", ocr_concurrency=1)
+    return Settings(jwt_metadata_address=METADATA_URL, ai_scoring_service_token=SCORING, ai_internal_token_for_search=SEARCH_KEY, redis_url="", job_service_url="http://job.test", ocr_concurrency=1)
 
 
 @pytest.fixture

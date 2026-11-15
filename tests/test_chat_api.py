@@ -2,7 +2,6 @@
 import json
 import time
 
-import jwt
 import pytest
 from fastapi.testclient import TestClient
 
@@ -11,12 +10,12 @@ from app.chat import intent as I
 from app.config import Settings
 from app.errors import SearchUnavailable
 from app.main import create_app
+from tests.jwks_support import METADATA_URL, claims, sign, sign_hs256
 from tests.test_cache import StubRedis
 
 HIT = {"id": "22222222-2222-2222-2222-222222222222", "title": "Java Developer", "company": "Acme"}
 ALICE = {"X-User-Id": "alice"}
 BOB = {"X-User-Id": "bob"}
-SECRET = "x" * 40
 
 
 class FakeSearch:
@@ -40,7 +39,7 @@ def search() -> FakeSearch:
 
 @pytest.fixture
 def chat_client(emb, search):
-    settings = Settings(jwt_secret="", dev_auth_enabled=True, environment="Development", redis_url="", job_service_url="http://job.test", ocr_concurrency=1)
+    settings = Settings(jwt_metadata_address="", dev_auth_enabled=True, environment="Development", redis_url="", job_service_url="http://job.test", ocr_concurrency=1)
     with TestClient(create_app(settings, emb, None, search_client=search)) as c:
         yield c
 
@@ -145,7 +144,7 @@ def test_both_readers_handle_template_answers_with_newlines_and_vietnamese(chat_
 
 
 def test_search_failure_streams_an_error_event_and_a_text_answer(emb):
-    settings = Settings(jwt_secret="", dev_auth_enabled=True, environment="Development", redis_url="", ocr_concurrency=1)
+    settings = Settings(jwt_metadata_address="", dev_auth_enabled=True, environment="Development", redis_url="", ocr_concurrency=1)
     with TestClient(create_app(settings, emb, None, search_client=FakeSearch(error=SearchUnavailable("down")))) as c:
         r = chat(c, "tìm việc Java")
         assert r.status_code == 200  # the stream has started; the failure is an event, not a status
@@ -158,7 +157,7 @@ def test_search_failure_streams_an_error_event_and_a_text_answer(emb):
 
 
 def test_unconfigured_search_takes_the_failure_path(emb):
-    settings = Settings(jwt_secret="", dev_auth_enabled=True, environment="Development", redis_url="", ocr_concurrency=1)  # search_service_url empty
+    settings = Settings(jwt_metadata_address="", dev_auth_enabled=True, environment="Development", redis_url="", ocr_concurrency=1)  # search_service_url empty
     with TestClient(create_app(settings, emb, None)) as c:
         r = chat(c, "tìm việc Java")
         assert any(e == "error" for e, _ in parse_frames(r.text))
@@ -227,7 +226,7 @@ def test_non_uuid_session_ids_are_no_ops_not_errors(chat_client):
 
 def test_session_store_is_keyed_by_the_prefixed_canonical_id_in_redis(emb):
     stub = StubRedis()
-    settings = Settings(jwt_secret="", dev_auth_enabled=True, environment="Development", redis_url="", ocr_concurrency=1)
+    settings = Settings(jwt_metadata_address="", dev_auth_enabled=True, environment="Development", redis_url="", ocr_concurrency=1)
     with TestClient(create_app(settings, emb, None, redis_client=stub, search_client=FakeSearch())) as c:
         sid = web_reader(chat(c, "viết CV").text)[2]
     assert f"ai:chat:{sid}" in stub.data and stub.ttls[f"ai:chat:{sid}"] == 24 * 3600
@@ -249,15 +248,15 @@ def test_session_endpoints_without_identity_are_401(chat_client):
 
 @pytest.fixture
 def jwt_client(emb, search):
-    settings = Settings(jwt_secret=SECRET, ai_internal_token_for_search="k" * 40, redis_url="", ocr_concurrency=1)
+    settings = Settings(jwt_metadata_address=METADATA_URL, ai_internal_token_for_search="k" * 40, redis_url="", ocr_concurrency=1)
     with TestClient(create_app(settings, emb, None, search_client=search)) as c:
         yield c
 
 
-def _token(sub="alice", secret=SECRET, expires_in=300):
+def _token(sub="alice", expires_in=300):
     now = int(time.time())
     claims = {"sub": sub, "iss": "job-platform", "aud": "job-platform", "iat": now, "exp": now + expires_in}
-    return jwt.encode(claims, secret, algorithm="HS256")
+    return sign(claims)
 
 
 def test_jwt_mode_needs_a_bearer_token(jwt_client):
@@ -266,7 +265,7 @@ def test_jwt_mode_needs_a_bearer_token(jwt_client):
 
 
 def test_jwt_mode_rejects_a_bad_signature_and_an_expired_token(jwt_client):
-    bad = {"Authorization": f"Bearer {_token(secret='y' * 40)}"}
+    bad = {"Authorization": f"Bearer {sign_hs256(claims(sub='alice'))}"}
     expired = {"Authorization": f"Bearer {_token(expires_in=-60)}"}
     assert jwt_client.post("/api/ai/chat", json={"message": "hi"}, headers=bad).status_code == 401
     assert jwt_client.post("/api/ai/chat", json={"message": "hi"}, headers=expired).status_code == 401
@@ -301,7 +300,7 @@ def test_non_json_body_is_400(chat_client):
 
 
 def test_chat_is_rate_limited_before_the_stream_starts(emb, search):
-    settings = Settings(jwt_secret="", dev_auth_enabled=True, environment="Development", redis_url="", ocr_concurrency=1, chat_rate_per_hour=2)
+    settings = Settings(jwt_metadata_address="", dev_auth_enabled=True, environment="Development", redis_url="", ocr_concurrency=1, chat_rate_per_hour=2)
     with TestClient(create_app(settings, emb, None, search_client=search)) as c:
         assert chat(c, "viết CV").status_code == 200
         assert chat(c, "viết CV").status_code == 200
@@ -311,7 +310,7 @@ def test_chat_is_rate_limited_before_the_stream_starts(emb, search):
 
 
 def test_session_endpoints_are_not_rate_limited(emb, search):
-    settings = Settings(jwt_secret="", dev_auth_enabled=True, environment="Development", redis_url="", ocr_concurrency=1, chat_rate_per_hour=1)
+    settings = Settings(jwt_metadata_address="", dev_auth_enabled=True, environment="Development", redis_url="", ocr_concurrency=1, chat_rate_per_hour=1)
     with TestClient(create_app(settings, emb, None, search_client=search)) as c:
         for _ in range(5):
             assert c.post("/api/ai/session", headers=ALICE).status_code == 201

@@ -10,10 +10,10 @@ from app.config import Settings
 from app.embed import HashingEmbedder
 from app.main import create_app
 from tests.conftest import CV_TEXT, SEARCH_KEY, make_text_pdf
+from tests.jwks_support import METADATA_URL, sign
 from tests.test_api import FakeJobs
 from tests.test_chat_api import FakeSearch
 
-SECRET = "s" * 40
 UUID = "77777777-7777-7777-7777-777777777777"
 PROTECTED = {
     ("POST", "/api/ai/score-resume"),
@@ -51,7 +51,7 @@ def fill(path: str) -> str:
 
 @pytest.fixture
 def jwt_settings() -> Settings:
-    return Settings(jwt_secret=SECRET, ai_internal_token_for_search=SEARCH_KEY, redis_url="", job_service_url="http://job.test", ocr_concurrency=1)
+    return Settings(jwt_metadata_address=METADATA_URL, ai_internal_token_for_search=SEARCH_KEY, redis_url="", job_service_url="http://job.test", ocr_concurrency=1)
 
 
 @pytest.fixture
@@ -61,9 +61,8 @@ def jwt_client(jwt_settings, emb):
 
 
 def bearer(sub: str = "alice") -> dict[str, str]:
-    import jwt
 
-    token = jwt.encode({"sub": sub, "iss": "job-platform", "aud": "job-platform", "exp": 4102444800}, SECRET, algorithm="HS256")
+    token = sign({"sub": sub, "iss": "job-platform", "aud": "job-platform", "exp": 4102444800})
     return {"Authorization": f"Bearer {token}"}
 
 
@@ -135,7 +134,7 @@ def test_normal_upload_still_scores(jwt_client):
 
 def test_app_refuses_to_build_without_a_verifiable_identity(emb):
     with pytest.raises(AuthConfigError):
-        create_app(Settings(jwt_secret="", redis_url=""), emb, FakeJobs())
+        create_app(Settings(jwt_metadata_address="", redis_url=""), emb, FakeJobs())
 
 
 class _ActiveModel:

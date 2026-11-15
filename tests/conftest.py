@@ -10,6 +10,7 @@ from lxml import etree
 
 from app.config import Settings
 from app.embed import HashingEmbedder
+from tests.jwks_support import METADATA_URL  # noqa: F401 - re-exported for the API tests
 
 SEARCH_KEY = "k" * 40  # AI_INTERNAL_TOKEN_FOR_SEARCH in tests (>= 32 chars, required outside Development)
 
@@ -34,7 +35,7 @@ Bachelor of Science in Computer Science, 2018
 
 @pytest.fixture
 def settings() -> Settings:
-    return Settings(job_service_url="http://job.test", ocr_concurrency=1, jwt_secret="", dev_auth_enabled=True, environment="Development", redis_url="")
+    return Settings(job_service_url="http://job.test", ocr_concurrency=1, jwt_metadata_address="", dev_auth_enabled=True, environment="Development", redis_url="")
 
 
 @pytest.fixture
