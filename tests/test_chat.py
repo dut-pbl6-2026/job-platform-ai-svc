@@ -110,16 +110,16 @@ async def test_search_client_builds_the_query_and_maps_items():
     def handler(request: httpx.Request) -> httpx.Response:
         seen["url"] = request.url
         return httpx.Response(200, json={"items": [
-            {"id": JOB_ID, "title": "Java Dev", "company_name": "Acme", "description": "secret text"},
-            {"title": "no id, skipped"},
+            {"score": 0.9, "job": {"id": JOB_ID, "title": "Java Dev", "company_name": "Acme", "description": "secret text"}},
+            {"score": 0.5, "job": {"title": "no id, skipped"}},
+            {"score": 0.4},
             "not a dict",
-        ], "total": 3})
+        ]})
 
-    hits = await search_with(handler).find_jobs(I.classify("Java developer ở Hà Nội"))
+    hits = await search_with(handler).find_jobs("Java developer tại Hà Nội")
     assert hits == [{"id": JOB_ID, "title": "Java Dev", "company": "Acme"}]
-    assert seen["url"].path == "/api/search/jobs"
-    params = dict(seen["url"].params)
-    assert params == {"size": "3", "skillOp": "or", "q": "developer", "location": HN, "skills": "Java"}
+    assert seen["url"].path == "/api/search/jobs/semantic"
+    assert dict(seen["url"].params) == {"q": "Java developer tại Hà Nội", "size": "3"}
 
 
 def _refuse(request: httpx.Request) -> httpx.Response:
@@ -138,12 +138,12 @@ def _refuse(request: httpx.Request) -> httpx.Response:
 )
 async def test_search_client_upstream_failures_raise_search_unavailable(handler):
     with pytest.raises(SearchUnavailable):
-        await search_with(handler).find_jobs(I.classify("Java ở Hà Nội"))
+        await search_with(handler).find_jobs("Java tại Hà Nội")
 
 
 async def test_unconfigured_search_is_unavailable_without_a_network_call():
     with pytest.raises(SearchUnavailable, match="not configured"):
-        await SearchClient("", 1.0).find_jobs(I.classify("Java"))
+        await SearchClient("", 1.0).find_jobs("Java")
 
 
 # --- engine ----------------------------------------------------------------
@@ -152,8 +152,8 @@ class FakeSearch:
     def __init__(self, hits=None, error=None):
         self.hits, self.error, self.calls = hits or [], error, []
 
-    async def find_jobs(self, found):
-        self.calls.append(found)
+    async def find_jobs(self, query):
+        self.calls.append(query)
         if self.error:
             raise self.error
         return list(self.hits)
@@ -163,7 +163,9 @@ HIT = {"id": JOB_ID, "title": "Java Developer", "company": "Acme"}
 
 
 async def test_engine_lists_hits_with_the_disclaimer():
-    reply = await engine.answer("tìm việc Java ở Hà Nội", FakeSearch([HIT]))
+    search = FakeSearch([HIT])
+    reply = await engine.answer("tìm việc Java ở Hà Nội", search)
+    assert search.calls == ["Java tại Hà Nội"]
     assert reply.jobs == [HIT] and reply.error is None
     assert "Java Developer tại Acme" in reply.text and engine.DISCLAIMER in reply.text
 

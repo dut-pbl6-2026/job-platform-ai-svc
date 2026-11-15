@@ -23,8 +23,8 @@ class FakeSearch:
     def __init__(self, hits=None, error=None):
         self.hits, self.error, self.calls = hits if hits is not None else [HIT], error, []
 
-    async def find_jobs(self, found):
-        self.calls.append(found)
+    async def find_jobs(self, query):
+        self.calls.append(query)
         if self.error:
             raise self.error
         return list(self.hits)
@@ -122,7 +122,7 @@ def test_chat_streams_sse_with_the_event_order_the_clients_expect(chat_client, s
     assert events[0] == "token" and events[-2:] == ["jobs", "done"]
     assert set(events) == {"token", "jobs", "done"}
     assert "\r" not in r.text
-    assert search.calls[0].keyword is None and search.calls[0].location == "Hà Nội"
+    assert search.calls == ["Java tại Hà Nội"]
 
 
 def test_web_and_mobile_readers_rebuild_the_same_reply_and_session(chat_client):
