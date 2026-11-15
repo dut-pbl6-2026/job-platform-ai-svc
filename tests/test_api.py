@@ -73,7 +73,7 @@ def test_score_is_cached_in_redis_with_a_24h_ttl_and_a_versioned_key(settings, e
         data = make_text_pdf(CV_TEXT)
         assert post(c, data).json()["meta"]["cached"] is False
         assert post(c, data).json()["meta"]["cached"] is True
-    (key,) = stub.data
+    (key,) = [k for k in stub.data if k.startswith("ai:score:")]
     assert key.startswith("ai:score:") and emb.name in key and stub.ttls[key] == 86400 and stub.plain_sets == []
 
 

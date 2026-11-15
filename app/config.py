@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     max_pages: int = 5
     rate_limit_per_min: int = 10
     cache_ttl_seconds: int = 24 * 3600
+    score_retention_seconds: int = 30 * 24 * 3600  # how long a user can reopen a score by its score_id
     job_cache_ttl_seconds: int = 600
     embedding_model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     embedding_cache_dir: str = "models"

@@ -21,17 +21,23 @@ curl -s localhost:6000/health
 curl -s -H "Authorization: Bearer $TOKEN" -F cv_file=@cv.pdf -F job_id=<uuid> localhost:6000/api/ai/score-resume
 ```
 
-Auth: `Authorization: Bearer <JWT from auth-svc>`; with no `JWT_SECRET` configured the service accepts `X-User-Id` (dev only). Through the gateway: `POST /api/ai/score-resume` (requires login).
+Auth: `Authorization: Bearer <JWT from auth-svc>`; with no `JWT_SECRET` configured the service accepts `X-User-Id` (dev only). Through the gateway: `POST /api/ai/score-resume` (requires login). Every response carries a `score_id`; the owner can reopen the result with `GET /api/ai/score-resume/{scoreId}` and delete it with `DELETE` (204). A score that is missing, expired or belongs to someone else is `404 score_not_found`.
 In Docker: `docker compose up -d --build ai gateway` from `job-platform-infra` (the image bakes the model in; the container is offline at runtime).
 Runtime footprint (measured, MiniLM + Tesseract): ~830 MB resident, ~900 MB peak → fits the `mem_limit: 1g` container; minimum host = 2 vCPU / 2 GB RAM / 5 GB disk, no GPU (see `eval/REPORT.md` §6).
 
 ## Configuration (env)
 
-`PORT` (6000) · `JOB_SERVICE_URL` · `REDIS_URL` (optional, either `redis://[:password@]host:6379/0` / `rediss://…` or the StackExchange form the .NET services share, `host:6379,password=…[,ssl=true][,defaultDatabase=1]`; unset or unreachable → in-process LRU, Redis is retried every 30 s) · `CACHE_TTL_SECONDS` (86400) · `JWT_SECRET/ISSUER/AUDIENCE` · `OCR_CONCURRENCY` (2) · `OCR_DPI` (200) · `MAX_UPLOAD_BYTES` (5 MB) · `MAX_PAGES` (5) · `RATE_LIMIT_PER_MIN` (10 per user) · `LOG_LEVEL` (accepts `Information` or `INFO`) · `EMBEDDING_CACHE_DIR` (models)
+`PORT` (6000) · `JOB_SERVICE_URL` · `REDIS_URL` (optional, either `redis://[:password@]host:6379/0` / `rediss://…` or the StackExchange form the .NET services share, `host:6379,password=…[,ssl=true][,defaultDatabase=1]`; unset or unreachable → in-process LRU, Redis is retried every 30 s) · `CACHE_TTL_SECONDS` (86400) · `SCORE_RETENTION_SECONDS` (2592000 = 30 days) · `JWT_SECRET/ISSUER/AUDIENCE` · `OCR_CONCURRENCY` (2) · `OCR_DPI` (200) · `MAX_UPLOAD_BYTES` (5 MB) · `MAX_PAGES` (5) · `RATE_LIMIT_PER_MIN` (10 per user) · `LOG_LEVEL` (accepts `Information` or `INFO`) · `EMBEDDING_CACHE_DIR` (models)
 
 ## Score cache
 
 A scored response is cached for 24 h under `ai:score:{ruleset}:{params version}:{embedder}:{sha256(file)}:{job id}:{job version}:{lang}`, so a different embedder (for example the hashing fallback when the model fails to load), a refit of `data/model_params.json` or an edited job never reuses an old score. Only the response is stored, never the CV file or its text. `/health` reports `"cache": "redis"` or `"memory"`.
+
+## Score records
+
+Each response is also stored for its owner under `ai:scorerec:{score_id}` for 30 days (`SCORE_RETENTION_SECONDS`), together with the user id, job id and creation time. `score_id` is a UUIDv5 of the user id and the cache key, so scoring the same file for the same job again returns the same id. The shared cache never holds the id or the owner. `GET` returns the stored response (no re-scoring, no job-svc call); `DELETE` removes the record and the shared 24 h entry for that file. Both are authenticated and not rate limited.
+
+What is kept: the response only. It includes short excerpts of the CV (`skills.evidence`, `top_matches[].cv_excerpt`) with e-mail addresses, links and phone numbers masked; **names and addresses are not masked**. The CV file and its full text are never stored or logged. Records are best-effort: with Redis down they live in memory and are lost on restart.
 
 ## Layout
 
