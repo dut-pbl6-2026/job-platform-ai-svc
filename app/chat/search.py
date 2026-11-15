@@ -35,7 +35,7 @@ class SearchClient:
             hits.append({
                 "id": str(job["id"]),
                 "title": str(job.get("title") or ""),
-                "company": str(job.get("company_name") or ""),
+                "company": str(job.get("companyName") or ""),
             })
         return hits
 
