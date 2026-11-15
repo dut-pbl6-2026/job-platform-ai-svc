@@ -181,7 +181,7 @@ async def test_search_client_reads_the_contract_and_returns_job_hits():
 
 async def test_search_client_drops_items_that_break_the_contract():
     payload = {"items": [{"score": 0.5, "job": {"title": "no id"}}, "not-an-object",
-                         {"score": 0.4, "job": {"id": JOB_ID, "title": "ok", "company_name": None}}]}
+                         {"score": 0.4, "job": {"id": JOB_ID, "title": "ok", "companyName": None}}]}
     client = SearchClient("http://search.test", 1.0)
     client._client = httpx.AsyncClient(transport=httpx.MockTransport(lambda r: httpx.Response(200, json=payload)))
     hits = await client.find_jobs("Java")

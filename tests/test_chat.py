@@ -110,7 +110,7 @@ async def test_search_client_builds_the_query_and_maps_items():
     def handler(request: httpx.Request) -> httpx.Response:
         seen["url"] = request.url
         return httpx.Response(200, json={"items": [
-            {"score": 0.9, "job": {"id": JOB_ID, "title": "Java Dev", "company_name": "Acme", "description": "secret text"}},
+            {"score": 0.9, "job": {"id": JOB_ID, "title": "Java Dev", "companyName": "Acme", "description": "secret text"}},
             {"score": 0.5, "job": {"title": "no id, skipped"}},
             {"score": 0.4},
             "not a dict",
