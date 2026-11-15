@@ -1,7 +1,6 @@
-"""HTTP client for search-svc (GET /api/search/jobs). Keyword and location search; ai-svc never queries Elasticsearch."""
+"""HTTP client for search-svc semantic job search (GET /api/search/jobs/semantic). ai-svc never queries Elasticsearch."""
 import httpx
 
-from app.chat.intent import Intent
 from app.errors import SearchUnavailable
 
 MAX_HITS = 3
@@ -12,19 +11,12 @@ class SearchClient:
         self.base = base_url.rstrip("/")
         self._client = httpx.AsyncClient(timeout=timeout)
 
-    async def find_jobs(self, found: Intent) -> list[dict]:
-        """Up to MAX_HITS jobs as {id, title, company}. Raises SearchUnavailable on any upstream failure."""
+    async def find_jobs(self, query: str) -> list[dict]:
+        """Up to MAX_HITS jobs as {id, title, company}, most similar first. Raises SearchUnavailable on any upstream failure."""
         if not self.base:
             raise SearchUnavailable("SEARCH_SERVICE_URL is not configured.")
-        params: dict[str, str | int] = {"size": MAX_HITS, "skillOp": "or"}
-        if found.keyword:
-            params["q"] = found.keyword
-        if found.location:
-            params["location"] = found.location
-        if found.skills:
-            params["skills"] = ",".join(found.skills)
         try:
-            r = await self._client.get(f"{self.base}/api/search/jobs", params=params)
+            r = await self._client.get(f"{self.base}/api/search/jobs/semantic", params={"q": query, "size": MAX_HITS})
         except httpx.HTTPError as exc:
             raise SearchUnavailable("Could not reach the search service.") from exc
         if r.status_code != 200:
@@ -37,12 +29,13 @@ class SearchClient:
             raise SearchUnavailable("Search service returned no items list.")
         hits = []
         for item in items[:MAX_HITS]:
-            if not isinstance(item, dict) or not item.get("id"):
+            job = item.get("job") if isinstance(item, dict) else None
+            if not isinstance(job, dict) or not job.get("id"):
                 continue
             hits.append({
-                "id": str(item["id"]),
-                "title": str(item.get("title") or ""),
-                "company": str(item.get("company_name") or ""),
+                "id": str(job["id"]),
+                "title": str(job.get("title") or ""),
+                "company": str(job.get("company_name") or ""),
             })
         return hits
 

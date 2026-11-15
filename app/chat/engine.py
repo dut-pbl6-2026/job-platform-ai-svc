@@ -72,7 +72,7 @@ async def answer(message: str, search: SearchClient) -> Reply:
     if not found.has_criteria:
         return Reply(NO_CRITERIA)
     try:
-        jobs = await search.find_jobs(found)
+        jobs = await search.find_jobs(describe(found))
     except SearchUnavailable as exc:
         # no message text in the log: it may contain what the user typed
         log.warning("chat job search failed (%s)", exc.code)
