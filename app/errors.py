@@ -73,3 +73,13 @@ class SearchUnavailable(ApiError):
     """search-svc is not configured, unreachable or failing. Used inside the chat stream as an error event."""
 
     status, code, title = 503, "search_service_unavailable", "Search service unavailable"
+
+
+class Unauthorized(ApiError):
+    status, code, title = 401, "unauthorized", "Unauthorized"
+
+
+class EmbedderUnavailable(ApiError):
+    """The local embedding model is not loaded. Never answered with placeholder vectors."""
+
+    status, code, title = 503, "embedder_unavailable", "Embedding model unavailable"

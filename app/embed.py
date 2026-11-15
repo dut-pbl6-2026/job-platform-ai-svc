@@ -10,6 +10,7 @@ import numpy as np
 
 class Embedder(Protocol):
     name: str
+    dim: int
 
     def embed(self, texts: list[str]) -> np.ndarray: ...
 
@@ -27,13 +28,16 @@ class OnnxEmbedder:
 
         self.name = model_name
         self._model = TextEmbedding(model_name=model_name, cache_dir=cache_dir)
+        # Probe once: the output size comes from the loaded model (search-svc sizes its vector index from it),
+        # and the probe also pays the session start-up cost before the first request.
+        self.dim = int(np.array(list(self._model.embed(["dimension probe"]))).shape[1])
         self._lock = threading.Lock()
         self._cache: OrderedDict[str, np.ndarray] = OrderedDict()
         self._cache_size = cache_size
 
     def embed(self, texts: list[str]) -> np.ndarray:
         if not texts:
-            return np.zeros((0, 1), dtype=np.float32)
+            return np.zeros((0, self.dim), dtype=np.float32)
         with self._lock:  # one lock for cache + model: requests run in worker threads
             found = {t: self._cache[t] for t in dict.fromkeys(texts) if t in self._cache}
             missing = [t for t in dict.fromkeys(texts) if t not in found]

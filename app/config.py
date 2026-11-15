@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     search_http_timeout_seconds: float = 5.0
     chat_rate_per_hour: int = 20  # per user, token bucket with a one-hour window
     chat_session_ttl_seconds: int = 24 * 3600  # sliding: refreshed on every message
+    internal_service_token: str = ""  # bearer for /api/internal/* (search-svc); empty => those endpoints refuse every call
 
 
 @lru_cache
