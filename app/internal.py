@@ -1,7 +1,8 @@
 """Service-to-service endpoints for search-svc: the local embedding model as a service (PBL6-56).
 
-Not routed by the gateway (it only forwards /api/ai/*). Bearer INTERNAL_SERVICE_TOKEN, fail closed:
-an unset token refuses every call. Texts are never logged.
+Not routed by the gateway (it only forwards /api/ai/*). Accepts only search-svc's bearer,
+AI_INTERNAL_TOKEN_FOR_SEARCH (no shared token, no other caller's key), fail closed: an unset token refuses every call.
+Texts are never logged.
 """
 import logging
 from typing import Annotated
@@ -24,10 +25,10 @@ class EmbedRequest(BaseModel):
 
 
 def require_internal(request: Request, settings: Settings) -> None:
-    if not settings.internal_service_token:
-        log.error("INTERNAL_SERVICE_TOKEN is not configured; refusing the internal call.")
-        raise Unauthorized("Internal endpoints are disabled until INTERNAL_SERVICE_TOKEN is set.")
-    if not bearer_matches(request.headers.get("authorization", ""), settings.internal_service_token):
+    if not settings.ai_internal_token_for_search:
+        log.error("AI_INTERNAL_TOKEN_FOR_SEARCH is not configured; refusing the internal call.")
+        raise Unauthorized("Internal endpoints are disabled until AI_INTERNAL_TOKEN_FOR_SEARCH is set.")
+    if not bearer_matches(request.headers.get("authorization", ""), settings.ai_internal_token_for_search):
         raise Unauthorized("A valid internal bearer token is required.")
 
 
