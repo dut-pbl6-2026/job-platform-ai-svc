@@ -3,8 +3,6 @@
 Not routed by the gateway (it only forwards /api/ai/*). Bearer INTERNAL_SERVICE_TOKEN, fail closed:
 an unset token refuses every call. Texts are never logged.
 """
-import hashlib
-import hmac
 import logging
 from typing import Annotated
 
@@ -12,34 +10,24 @@ from fastapi import APIRouter, Request
 from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel, Field
 
+from app.auth import bearer_matches
 from app.config import Settings
 from app.embed import Embedder, HashingEmbedder
 from app.errors import EmbedderUnavailable, Unauthorized
 
 log = logging.getLogger("ai.internal")
 EMBED_MAX_TEXTS = 256
-_BEARER = "bearer "
 
 
 class EmbedRequest(BaseModel):
     texts: list[Annotated[str, Field(min_length=1)]] = Field(min_length=1, max_length=EMBED_MAX_TEXTS)
 
 
-def is_authorized(header: str, expected: str) -> bool:
-    if not header.lower().startswith(_BEARER):
-        return False
-    token = header[len(_BEARER):].strip()
-    if not token:
-        return False
-    # Hash both sides so the compared digests always have the same length (no length leak).
-    return hmac.compare_digest(hashlib.sha256(token.encode()).digest(), hashlib.sha256(expected.encode()).digest())
-
-
 def require_internal(request: Request, settings: Settings) -> None:
     if not settings.internal_service_token:
         log.error("INTERNAL_SERVICE_TOKEN is not configured; refusing the internal call.")
         raise Unauthorized("Internal endpoints are disabled until INTERNAL_SERVICE_TOKEN is set.")
-    if not is_authorized(request.headers.get("authorization", ""), settings.internal_service_token):
+    if not bearer_matches(request.headers.get("authorization", ""), settings.internal_service_token):
         raise Unauthorized("A valid internal bearer token is required.")
 
 
