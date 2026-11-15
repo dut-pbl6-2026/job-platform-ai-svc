@@ -25,9 +25,7 @@ annotations, the Haiku labels agree with the A/B consensus at **ρ = 0.90** — 
 related but not identical, so every table below reports all three.
 
 The CV texts stay on the machine (`eval/cache/cvs` is git-ignored). Only the labels (integers)
-are committed. When the NVIDIA embedding API was tested, the CV text was scrubbed of the
-name/contact header, e-mails, phones and links before it left the machine, and the local models
-scored the *same* scrubbed text, so the comparison is apples-to-apples.
+are committed.
 
 ### 1.2 Protocol
 
@@ -107,40 +105,29 @@ one; the measured ceiling of this approach on 5 760 pairs is ρ ≈ 0.62.
 
 All providers scored the same 5 760 pairs, the same PII-scrubbed CV text, a provider-specific
 cosine window (fitted on the train jobs) and provider-specific weights (refitted on the train
-jobs) — so the table compares the models, not their calibration. Raw numbers:
-`eval/results_compare_summary.json`.
+jobs) — so the table compares the models, not their calibration. The raw numbers were produced
+by a provider-comparison script that has been removed together with the third-party API it
+called; only the local-model rows are kept.
 
 | Provider | ρ vs. Haiku (held-out) | ρ vs. A/B | ρ vs. Sonnet | Semantic ρ | RAM / latency | Constraint |
 |---|---|---|---|---|---|---|
 | **`paraphrase-multilingual-MiniLM-L12-v2` (local ONNX, 224 MB)** | 0.5706 | 0.7633 | 0.6462 | 0.4544 | **830 MB, 221 ms/request** | shipped; fits the 1 GB container |
 | `paraphrase-multilingual-mpnet-base-v2` (local ONNX, 1 059 MB) | **0.5980** | 0.7777 | **0.6631** | **0.5158** | 1 600 MB, 693 ms/request | +0.028 ρ, but 2× RAM and 3× latency → breaks the 1 GB budget |
-| `nvidia/nemotron-3.5-embed-8b` (NVIDIA NIM API, 4 096-d) | 0.5954 | **0.7997** | **0.6871** | 0.5145 | 1 call per CV chunk | third-party API: violates the "no third-party AI/LLM API" constraint |
 
 Paired bootstrap over the 8 held-out jobs (4 000 resamples of whole jobs):
 
 | Comparison | Δρ | 95 % CI | P(first is better) |
 |---|---|---|---|
 | mpnet − MiniLM | **+0.0263** | **+0.0054 … +0.0496** | 0.998 |
-| NVIDIA − MiniLM | +0.0208 | −0.0489 … +0.0977 | 0.699 |
-| NVIDIA − mpnet | −0.0045 | −0.0691 … +0.0594 | 0.564 |
 
 **Recommendation: stay local, stay on MiniLM.** Two independent reasons:
 
-1. *The API is not allowed and does not help.* The frontier NVIDIA encoder is statistically
-   indistinguishable from the local mpnet (Δρ = −0.005, CI straddles 0) and even against MiniLM
-   the difference is not significant. The reason is visible in the components: the rule-based
-   skills component (ρ 0.5842 for every provider — it does not use embeddings) dominates the
-   blend, and the *semantic* component saturates at ρ ≈ 0.515 for both mpnet and Nemotron. A
-   stronger encoder cannot lift a saturated feature. On top of that, an API breaks the "no
-   third-party AI/LLM API" constraint, adds a runtime network dependency, sends CV text to a third
-   party and costs money per request.
-2. *The local upgrade is not worth its price.* mpnet buys +0.028 ρ and nothing on AUC/NDCG@5 for
-   +780 MB RAM and 3× the embedding latency (§2.3).
-
-NVIDIA endpoint notes (measured while running the comparison): a request with **more than one
-input** fails with HTTP 500 in 15–20 % of the cases (single-input requests are reliable), the
-response is 4 096 float32 dimensions (52 KB as JSON, 22 KB as base64), and a free key sustained
-~12–15 texts/s with 6 parallel connections for the 11 128 unique texts (16 min for the whole grid).
+1. *The local upgrade is not worth its price.* mpnet buys +0.028 ρ and nothing on AUC/NDCG@5 for
+   +780 MB RAM and 3× the embedding latency (§2.3). The semantic component saturates at
+   ρ ≈ 0.515 for mpnet, so a stronger encoder cannot lift it, and the rule-based skills component
+   (ρ 0.5842 for every provider) dominates the blend.
+2. *Third-party embedding APIs are out of scope.* They break the "no third-party AI/LLM API"
+   constraint and would add a runtime network dependency and send CV text to a third party.
 
 ## 6. Service performance and hardware requirement
 
@@ -187,8 +174,6 @@ mise run eval-grid     # the 5 760-pair fit -> data/model_params.json (shipped p
 python eval/run_full.py --labels eval/labels/grid/haiku_5760.json \
                         --sonnet eval/labels/grid/sonnet_292.json --tag shipped   # full-grid report
 python eval/features_grid.py                         # feature exploration (single-feature ρ, blends)
-python eval/compare_embedders.py                     # provider comparison (NVIDIA_API_KEY optional)
-python eval/compare_stats.py                         # merge the provider runs + paired bootstrap
 python eval/agreement.py
 python eval/latency.py --url ... --token ... --job ...
 ```
