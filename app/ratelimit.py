@@ -4,9 +4,9 @@ from collections import defaultdict
 
 
 class RateLimiter:
-    def __init__(self, per_minute: int):
+    def __init__(self, per_minute: int, window_seconds: float = 60.0):
         self.capacity = max(per_minute, 1)
-        self.rate = self.capacity / 60.0
+        self.rate = self.capacity / window_seconds
         self._state: dict[str, tuple[float, float]] = defaultdict(lambda: (float(self.capacity), time.monotonic()))
 
     def allow(self, key: str) -> bool:

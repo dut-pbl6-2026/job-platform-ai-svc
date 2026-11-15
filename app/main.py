@@ -7,14 +7,18 @@ from datetime import UTC, datetime
 
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import JSONResponse, Response, StreamingResponse
 
 from app import service
 from app.auth import current_user
 from app.cache import ResultCache, connect
+from app.chat import engine
+from app.chat.search import SearchClient
+from app.chat.sessions import MAX_MESSAGES, ChatSessions, canonical_id, now_iso
+from app.chat.sse import frame, token_frames
 from app.config import Settings, get_settings
 from app.embed import Embedder, HashingEmbedder, OnnxEmbedder
-from app.errors import ApiError, BadRequest, Busy, FileTooLarge, RateLimited, ScoreNotFound
+from app.errors import ApiError, BadRequest, Busy, FileTooLarge, RateLimited, ScoreNotFound, SessionNotFound
 from app.job_client import JobClient
 from app.parsing.ocr import ocr_available
 from app.ratelimit import RateLimiter
@@ -39,7 +43,16 @@ def build_embedder(settings: Settings) -> Embedder:
         return HashingEmbedder()
 
 
-def create_app(settings: Settings | None = None, embedder: Embedder | None = None, job_client: JobClient | None = None, redis_client=None) -> FastAPI:
+CHAT_MAX_CHARS = 2000
+
+
+def create_app(
+    settings: Settings | None = None,
+    embedder: Embedder | None = None,
+    job_client: JobClient | None = None,
+    redis_client=None,
+    search_client: SearchClient | None = None,
+) -> FastAPI:
     settings = settings or get_settings()
     logging.basicConfig(level=log_level(settings.log_level))
 
@@ -51,10 +64,14 @@ def create_app(settings: Settings | None = None, embedder: Embedder | None = Non
         # one connection, two keyspaces: the 24 h cache shared by file, and the per-user score records
         app.state.cache = await run_in_threadpool(ResultCache, "", settings.cache_ttl_seconds, client=client)
         app.state.records = await run_in_threadpool(ResultCache, "", settings.score_retention_seconds, prefix="ai:scorerec:", client=client)
+        app.state.chat = ChatSessions(await run_in_threadpool(ResultCache, "", settings.chat_session_ttl_seconds, 2048, prefix="ai:chat:", client=client))
+        app.state.search = search_client or SearchClient(settings.search_service_url, settings.search_http_timeout_seconds)
+        app.state.chat_limiter = RateLimiter(settings.chat_rate_per_hour, window_seconds=3600)
         app.state.limiter = RateLimiter(settings.rate_limit_per_min)
         app.state.sem = asyncio.Semaphore(settings.ocr_concurrency)
         yield
         await app.state.jobs.close()
+        await app.state.search.close()
 
     app = FastAPI(title="job-platform-ai-svc", version="0.1.0", lifespan=lifespan)
 
@@ -141,6 +158,94 @@ def create_app(settings: Settings | None = None, embedder: Embedder | None = Non
         await run_in_threadpool(app.state.records.delete, score_id)
         await run_in_threadpool(app.state.cache.delete, record["cache_key"])
         return Response(status_code=204)
+
+    async def _own_session(request: Request, session_id: str) -> tuple[str, str, dict | None]:
+        user = current_user(request, settings)
+        sid = canonical_id(session_id)
+        record = await run_in_threadpool(app.state.chat.load, user, sid) if sid else None
+        return user, sid or "", record
+
+    @app.post("/api/ai/session", status_code=201)
+    async def create_session(request: Request):
+        user = current_user(request, settings)
+        sid = str(uuid.uuid4())
+        record = await run_in_threadpool(app.state.chat.save, user, sid, [])
+        return {"sessionId": sid, "createdAt": record["created_at"]}
+
+    @app.get("/api/ai/session/{session_id}/history")
+    async def session_history(request: Request, session_id: str):
+        # missing, expired and other users' sessions all read as empty: no 404 for the web client to misread
+        _, _, record = await _own_session(request, session_id)
+        return record["messages"] if record else []
+
+    @app.get("/api/ai/session/{session_id}")
+    async def get_session(request: Request, session_id: str):
+        _, sid, record = await _own_session(request, session_id)
+        if not record:
+            raise SessionNotFound("No chat session with this id for the current user (it may have expired).")
+        return {"sessionId": sid, "createdAt": record["created_at"], "updatedAt": record["updated_at"], "messages": record["messages"]}
+
+    @app.delete("/api/ai/session/{session_id}", status_code=204)
+    async def delete_session(request: Request, session_id: str):
+        user, sid, _ = await _own_session(request, session_id)
+        if sid:
+            await run_in_threadpool(app.state.chat.delete, user, sid)
+        return Response(status_code=204)
+
+    async def _chat_body(request: Request) -> dict:
+        try:
+            body = await request.json()
+        except ValueError:
+            raise BadRequest("Body must be JSON.") from None
+        if not isinstance(body, dict):
+            raise BadRequest("Body must be a JSON object.")
+        message = body.get("message")
+        if not isinstance(message, str) or not message.strip():
+            raise BadRequest("message is required.")
+        if len(message) > CHAT_MAX_CHARS:
+            raise BadRequest(f"message must be at most {CHAT_MAX_CHARS} characters.")
+        stream = body.get("stream", True)
+        if not isinstance(stream, bool):
+            raise BadRequest("stream must be a boolean.")
+        return {"message": message.strip(), "session_id": body.get("sessionId"), "stream": stream}
+
+    @app.post("/api/ai/chat")
+    async def chat(request: Request):
+        user = current_user(request, settings)
+        body = await _chat_body(request)
+        if not app.state.chat_limiter.allow(user):
+            raise RateLimited("Too many chat messages; try again later.")
+        # an unknown, expired or someone else's session id starts a new session; the id comes back in `done`
+        requested = canonical_id(body["session_id"])
+        record = await run_in_threadpool(app.state.chat.load, user, requested) if requested else None
+        sid = requested if record else str(uuid.uuid4())
+        history = record["messages"] if record else []
+        now = now_iso()
+        reply = await engine.answer(body["message"], app.state.search)
+        assistant = {"id": str(uuid.uuid4()), "role": "assistant", "content": reply.text, "createdAt": now}
+        if reply.jobs:
+            assistant["jobs"] = reply.jobs
+        user_msg = {"id": str(uuid.uuid4()), "role": "user", "content": body["message"], "createdAt": now}
+        messages = (history + [user_msg, assistant])[-MAX_MESSAGES:]
+        # persist before the first byte is streamed: a client that disconnects mid-answer keeps its history
+        await run_in_threadpool(app.state.chat.save, user, sid, messages, record["created_at"] if record else None)
+
+        if not body["stream"]:
+            return {"response": reply.text, "sessionId": sid, "jobs": reply.jobs}
+
+        async def events():
+            for chunk in token_frames(reply.text):
+                yield chunk
+            if reply.error:
+                yield frame("error", reply.error)
+            if reply.jobs:
+                yield frame("jobs", reply.jobs)
+            yield frame("done", {"sessionId": sid, "done": True})
+
+        return StreamingResponse(
+            events(), media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        )
 
     return app
 

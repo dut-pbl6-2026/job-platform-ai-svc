@@ -27,6 +27,10 @@ class Settings(BaseSettings):
     jwt_issuer: str = "job-platform"
     jwt_audience: str = "job-platform"
     job_http_timeout_seconds: float = 5.0
+    search_service_url: str = ""  # e.g. http://search:5003 ; empty => chat job search is unavailable
+    search_http_timeout_seconds: float = 5.0
+    chat_rate_per_hour: int = 20  # per user, token bucket with a one-hour window
+    chat_session_ttl_seconds: int = 24 * 3600  # sliding: refreshed on every message
 
 
 @lru_cache

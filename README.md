@@ -27,7 +27,7 @@ Runtime footprint (measured, MiniLM + Tesseract): ~830 MB resident, ~900 MB peak
 
 ## Configuration (env)
 
-`PORT` (6000) · `JOB_SERVICE_URL` · `REDIS_URL` (optional, either `redis://[:password@]host:6379/0` / `rediss://…` or the StackExchange form the .NET services share, `host:6379,password=…[,ssl=true][,defaultDatabase=1]`; unset or unreachable → in-process LRU, Redis is retried every 30 s) · `CACHE_TTL_SECONDS` (86400) · `SCORE_RETENTION_SECONDS` (2592000 = 30 days) · `JWT_SECRET/ISSUER/AUDIENCE` · `OCR_CONCURRENCY` (2) · `OCR_DPI` (200) · `MAX_UPLOAD_BYTES` (5 MB) · `MAX_PAGES` (5) · `RATE_LIMIT_PER_MIN` (10 per user) · `LOG_LEVEL` (accepts `Information` or `INFO`) · `EMBEDDING_CACHE_DIR` (models)
+`PORT` (6000) · `JOB_SERVICE_URL` · `REDIS_URL` (optional, either `redis://[:password@]host:6379/0` / `rediss://…` or the StackExchange form the .NET services share, `host:6379,password=…[,ssl=true][,defaultDatabase=1]`; unset or unreachable → in-process LRU, Redis is retried every 30 s) · `CACHE_TTL_SECONDS` (86400) · `SCORE_RETENTION_SECONDS` (2592000 = 30 days) · `SEARCH_SERVICE_URL` (chat job search; empty = unavailable) · `SEARCH_HTTP_TIMEOUT_SECONDS` (5) · `CHAT_RATE_PER_HOUR` (20) · `CHAT_SESSION_TTL_SECONDS` (86400) · `JWT_SECRET/ISSUER/AUDIENCE` · `OCR_CONCURRENCY` (2) · `OCR_DPI` (200) · `MAX_UPLOAD_BYTES` (5 MB) · `MAX_PAGES` (5) · `RATE_LIMIT_PER_MIN` (10 per user) · `LOG_LEVEL` (accepts `Information` or `INFO`) · `EMBEDDING_CACHE_DIR` (models)
 
 ## Score cache
 
@@ -38,6 +38,10 @@ A scored response is cached for 24 h under `ai:score:{ruleset}:{params version}:
 Each response is also stored for its owner under `ai:scorerec:{score_id}` for 30 days (`SCORE_RETENTION_SECONDS`), together with the user id, job id and creation time. `score_id` is a UUIDv5 of the user id and the cache key, so scoring the same file for the same job again returns the same id. The shared cache never holds the id or the owner. `GET` returns the stored response (no re-scoring, no job-svc call); `DELETE` removes the record and the shared 24 h entry for that file. Both are authenticated and not rate limited.
 
 What is kept: the response only. It includes short excerpts of the CV (`skills.evidence`, `top_matches[].cv_excerpt`) with e-mail addresses, links and phone numbers masked; **names and addresses are not masked**. The CV file and its full text are never stored or logged. Records are best-effort: with Redis down they live in memory and are lost on restart.
+
+## Chat (PBL6-57)
+
+`POST /api/ai/chat` streams an answer as server-sent events (`token`, `jobs`, `error`, `done`); `stream: false` returns JSON. Replies come from **rules and templates**: intent by patterns (job search, CV, interview, greeting, help, off-topic), parameters (role, skills, city) by dictionaries, job hits from search-svc `GET /api/search/jobs`. No language model is called. Sessions: `POST /api/ai/session`, `GET /api/ai/session/{id}/history`, `DELETE /api/ai/session/{id}`; they are owned by the user, kept 24 h after the last message, and capped at 20 messages. Limit: 20 chat messages per user per hour (token bucket). Set `SEARCH_SERVICE_URL` (for example `http://search:5003`) or job search answers with an `error` event.
 
 ## Layout
 
