@@ -11,6 +11,8 @@ from lxml import etree
 from app.config import Settings
 from app.embed import HashingEmbedder
 
+SEARCH_KEY = "k" * 40  # AI_INTERNAL_TOKEN_FOR_SEARCH in tests (>= 32 chars, required outside Development)
+
 CV_TEXT = """John Smith
 Senior Python Developer
 

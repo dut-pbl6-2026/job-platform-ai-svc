@@ -41,7 +41,9 @@ class Settings(BaseSettings):
     search_http_timeout_seconds: float = 5.0
     chat_rate_per_hour: int = 20  # per user, token bucket with a one-hour window
     chat_session_ttl_seconds: int = 24 * 3600  # sliding: refreshed on every message
-    internal_service_token: str = ""  # bearer for /api/internal/* (search-svc); empty => those endpoints refuse every call
+    # Bearer that search-svc presents to /api/internal/* (embedding). Environment only, no default in code.
+    # Required outside Development (>= 32 characters, enforced at startup). Empty in Development => those endpoints refuse every call.
+    ai_internal_token_for_search: str = ""
     # Bearer for app-svc's background scoring: accepted ONLY by POST /api/ai/score-resume, as user "app-svc-scoring".
     # Environment only. Empty => no scoring caller. Production requires >= 32 characters. Exempt from the per-user cap.
     ai_scoring_service_token: str = ""

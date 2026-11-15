@@ -9,7 +9,7 @@ from app.auth import AuthConfigError
 from app.config import Settings
 from app.embed import HashingEmbedder
 from app.main import create_app
-from tests.conftest import CV_TEXT, make_text_pdf
+from tests.conftest import CV_TEXT, SEARCH_KEY, make_text_pdf
 from tests.test_api import FakeJobs
 from tests.test_chat_api import FakeSearch
 
@@ -26,7 +26,7 @@ PROTECTED = {
     ("POST", "/api/ai/chat"),
 }
 PUBLIC = {("GET", "/health"), ("GET", "/api/ai/health")}
-INTERNAL = {("POST", "/api/internal/embed"), ("GET", "/api/internal/embed/info")}  # bearer INTERNAL_SERVICE_TOKEN, tested elsewhere
+INTERNAL = {("POST", "/api/internal/embed"), ("GET", "/api/internal/embed/info")}  # bearer AI_INTERNAL_TOKEN_FOR_SEARCH, tested in test_internal_api.py
 
 
 def route_table(app) -> set[tuple[str, str]]:
@@ -51,7 +51,7 @@ def fill(path: str) -> str:
 
 @pytest.fixture
 def jwt_settings() -> Settings:
-    return Settings(jwt_secret=SECRET, redis_url="", job_service_url="http://job.test", ocr_concurrency=1)
+    return Settings(jwt_secret=SECRET, ai_internal_token_for_search=SEARCH_KEY, redis_url="", job_service_url="http://job.test", ocr_concurrency=1)
 
 
 @pytest.fixture

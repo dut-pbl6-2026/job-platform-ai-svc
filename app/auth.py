@@ -18,6 +18,7 @@ from app.config import Settings
 
 MIN_JWT_SECRET_LENGTH = 32
 MIN_SCORING_TOKEN_LENGTH = 32  # enforced in Production only
+MIN_INTERNAL_TOKEN_LENGTH = 32  # AI_INTERNAL_TOKEN_FOR_SEARCH, enforced in Production only
 SCORING_SUBJECT = "app-svc-scoring"
 DEVELOPMENT = "development"
 _BEARER = "bearer "
@@ -64,6 +65,16 @@ def validate_auth(settings: Settings) -> None:
         raise AuthConfigError("DEV_AUTH_ENABLED=true is only allowed when the environment is Development.")
     if settings.ai_scoring_service_token and not _is_development(settings) and len(settings.ai_scoring_service_token) < MIN_SCORING_TOKEN_LENGTH:
         raise AuthConfigError(f"AI_SCORING_SERVICE_TOKEN must be at least {MIN_SCORING_TOKEN_LENGTH} characters in Production.")
+    internal = settings.ai_internal_token_for_search
+    if not _is_development(settings):
+        # Fail closed: search-svc's embedding calls need their own key; there is no shared fallback.
+        if not internal:
+            raise AuthConfigError("AI_INTERNAL_TOKEN_FOR_SEARCH is required outside Development (search-svc bearer for /api/internal/*).")
+        if len(internal) < MIN_INTERNAL_TOKEN_LENGTH:
+            raise AuthConfigError(f"AI_INTERNAL_TOKEN_FOR_SEARCH must be at least {MIN_INTERNAL_TOKEN_LENGTH} characters outside Development.")
+    if internal and internal == settings.ai_scoring_service_token:
+        # Otherwise app-svc's scoring key would also open the internal embedding endpoints.
+        raise AuthConfigError("AI_INTERNAL_TOKEN_FOR_SEARCH must differ from AI_SCORING_SERVICE_TOKEN.")
     if settings.jwt_secret:
         if len(settings.jwt_secret) < MIN_JWT_SECRET_LENGTH:
             raise AuthConfigError(f"JWT_SECRET must be at least {MIN_JWT_SECRET_LENGTH} characters.")

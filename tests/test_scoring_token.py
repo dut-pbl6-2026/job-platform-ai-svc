@@ -23,7 +23,7 @@ from app.auth import (
 )
 from app.config import Settings
 from app.main import create_app
-from tests.conftest import CV_TEXT, make_text_pdf
+from tests.conftest import CV_TEXT, SEARCH_KEY, make_text_pdf
 from tests.test_api import JOB_ID, FakeJobs
 from tests.test_chat_api import FakeSearch
 from tests.test_security_api import PROTECTED, fill
@@ -54,7 +54,7 @@ def user_token(sub: str = "alice") -> str:
     ],
 )
 def test_scoring_token_policy_allows_valid_configurations(kwargs):
-    validate_auth(Settings(**kwargs))
+    validate_auth(Settings(**{"ai_internal_token_for_search": SEARCH_KEY, **kwargs}))
 
 
 def test_short_scoring_token_refuses_to_start_in_production_even_with_a_valid_jwt_secret():
@@ -156,7 +156,7 @@ def make_client(settings, emb):
 
 @pytest.fixture
 def scoring_settings() -> Settings:
-    return Settings(jwt_secret=SECRET, ai_scoring_service_token=SCORING, redis_url="", job_service_url="http://job.test", ocr_concurrency=1)
+    return Settings(jwt_secret=SECRET, ai_scoring_service_token=SCORING, ai_internal_token_for_search=SEARCH_KEY, redis_url="", job_service_url="http://job.test", ocr_concurrency=1)
 
 
 @pytest.fixture

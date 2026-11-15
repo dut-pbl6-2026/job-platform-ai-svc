@@ -249,7 +249,7 @@ def test_session_endpoints_without_identity_are_401(chat_client):
 
 @pytest.fixture
 def jwt_client(emb, search):
-    settings = Settings(jwt_secret=SECRET, redis_url="", ocr_concurrency=1)
+    settings = Settings(jwt_secret=SECRET, ai_internal_token_for_search="k" * 40, redis_url="", ocr_concurrency=1)
     with TestClient(create_app(settings, emb, None, search_client=search)) as c:
         yield c
 

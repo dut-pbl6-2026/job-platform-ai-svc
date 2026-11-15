@@ -9,6 +9,7 @@ from app.config import Settings
 
 SECRET = "s" * 32
 DEV = {"dev_auth_enabled": True, "environment": "Development"}
+INTERNAL = "i" * 40  # AI_INTERNAL_TOKEN_FOR_SEARCH: required outside Development
 
 
 def request(headers: dict[str, str] | None = None) -> Request:
@@ -28,7 +29,7 @@ def request(headers: dict[str, str] | None = None) -> Request:
     ],
 )
 def test_valid_identity_configurations_start(kwargs):
-    validate_auth(Settings(**kwargs))
+    validate_auth(Settings(**{"ai_internal_token_for_search": INTERNAL, **kwargs}))
 
 
 @pytest.mark.parametrize(
@@ -45,7 +46,7 @@ def test_valid_identity_configurations_start(kwargs):
 )
 def test_unverifiable_configurations_refuse_to_start(kwargs, message):
     with pytest.raises(AuthConfigError, match=message) as info:
-        validate_auth(Settings(**kwargs))
+        validate_auth(Settings(**{"ai_internal_token_for_search": INTERNAL, **kwargs}))
     assert SECRET not in str(info.value)  # errors never echo the secret
 
 
@@ -96,3 +97,28 @@ def test_dev_header_is_trusted_only_in_explicit_development_mode():
         with pytest.raises(HTTPException) as info:
             current_user(request({"X-User-Id": "attacker"}), settings)
         assert info.value.status_code == 401
+
+
+# --- AI_INTERNAL_TOKEN_FOR_SEARCH (search-svc's key for /api/internal/*) ----
+
+@pytest.mark.parametrize("kwargs", [{"jwt_secret": SECRET}, {"jwt_secret": "", "environment": "Production"}])
+def test_missing_search_key_refuses_to_start_outside_development(kwargs):
+    with pytest.raises(AuthConfigError, match="AI_INTERNAL_TOKEN_FOR_SEARCH is required") as info:
+        validate_auth(Settings(**kwargs))
+    assert "AI_INTERNAL_TOKEN_FOR_SEARCH is required" in str(info.value)
+
+
+def test_missing_search_key_is_allowed_in_development():
+    validate_auth(Settings(jwt_secret="", **DEV))  # internal endpoints then refuse every call (see test_internal_api)
+
+
+def test_short_search_key_refuses_to_start_outside_development():
+    with pytest.raises(AuthConfigError, match="must be at least 32"):
+        validate_auth(Settings(jwt_secret=SECRET, ai_internal_token_for_search="i" * 31))
+
+
+def test_search_key_must_differ_from_the_scoring_key_and_never_echoes_it():
+    settings = Settings(jwt_secret=SECRET, ai_internal_token_for_search=INTERNAL, ai_scoring_service_token=INTERNAL)
+    with pytest.raises(AuthConfigError, match="must differ") as info:
+        validate_auth(settings)
+    assert INTERNAL not in str(info.value)
