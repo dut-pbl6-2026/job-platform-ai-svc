@@ -148,3 +148,97 @@ def test_huge_pdf_page_does_not_oom(settings):
     p = parse_cv(doc.tobytes(), settings)
     assert "postgresql" in p.text.lower()
 
+
+
+# --- DOCX guard: the cap counts decompressed bytes, not the archive's own size fields ----------------
+
+def _forge_declared_size(data: bytes, name: str, declared: int) -> bytes:
+    """Rewrite only the central-directory uncompressed size of one member, the way a hostile archive can.
+
+    The compressed size stays honest: stdlib zipfile stops reading the compressed stream at that size, so
+    changing it would truncate the data instead of testing the guard.
+    """
+    import struct
+
+    raw = bytearray(data)
+    at = raw.find(b"PK\x01\x02")
+    while at >= 0:
+        (name_len,) = struct.unpack_from("<H", raw, at + 28)
+        if bytes(raw[at + 46:at + 46 + name_len]) == name.encode():
+            struct.pack_into("<I", raw, at + 24, declared)
+        at = raw.find(b"PK\x01\x02", at + 4)
+    return bytes(raw)
+
+
+@pytest.fixture
+def small_docx_cap(monkeypatch):
+    """A 1 MB cap keeps the tests light; the production cap is 50 MB and the code path is the same."""
+    from app.parsing import parse
+
+    monkeypatch.setattr(parse, "MAX_DOCX_UNCOMPRESSED", 1024 * 1024)
+
+
+def _stored_docx_archive(payload: bytes) -> bytes:
+    import io
+    import zipfile
+
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_STORED) as z:
+        z.writestr("word/document.xml", payload)
+        z.writestr("[Content_Types].xml", "<x/>")
+    return buf.getvalue()
+
+
+def test_honest_member_over_the_cap_is_a_zip_bomb(settings, small_docx_cap):
+    # honest sizes: the streamed count itself must trip the cap (no ratio involved for stored data)
+    data = _stored_docx_archive(bytes(range(256)) * 8192)  # ~2 MB > 1 MB cap
+    with pytest.raises(ZipBomb):
+        parse_cv(data, settings)
+
+
+def test_forged_small_header_is_rejected_without_expanding_the_member(settings, small_docx_cap):
+    # The declared size says 100 bytes; the member really holds ~2 MB. The streamed reader never trusts the
+    # header: zipfile fails the CRC check on the forged length after a bounded chunk, and the archive is refused.
+    data = _forge_declared_size(_stored_docx_archive(bytes(range(256)) * 8192), "word/document.xml", 100)
+    import io
+    import zipfile
+
+    with zipfile.ZipFile(io.BytesIO(data)) as z:
+        assert z.infolist()[0].file_size == 100
+    with pytest.raises(CvUnreadable):
+        parse_cv(data, settings)
+
+
+def test_forged_deflate_bomb_is_rejected(settings, small_docx_cap):
+    import io
+    import zipfile
+
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("word/document.xml", b"x" * (4 * 1024 * 1024))  # 4 MB that compresses to a few KB
+        z.writestr("[Content_Types].xml", "<x/>")
+    forged = _forge_declared_size(buf.getvalue(), "word/document.xml", 100)
+    assert len(forged) < settings.max_upload_bytes
+    with pytest.raises(CvUnreadable):
+        parse_cv(forged, settings)
+
+
+def test_corrupt_member_is_unreadable_not_unsupported(settings):
+    import io
+    import zipfile
+
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr("word/document.xml", "<w:document>" + "a" * 5000 + "</w:document>")
+        z.writestr("[Content_Types].xml", "<x/>")
+    data = bytearray(buf.getvalue())
+    start = data.find(b"PK\x03\x04") + 30 + len("word/document.xml")  # first byte of the member's deflate stream
+    for i in range(start, start + 20):
+        data[i] ^= 0xFF
+    with pytest.raises(CvUnreadable):
+        parse_cv(bytes(data), settings)
+
+
+def test_honest_docx_under_the_cap_is_still_read(settings, small_docx_cap):
+    p = parse_cv(make_docx([(CV_TEXT, {})]), settings)
+    assert p.parser == "docx" and "postgresql" in p.text.lower()

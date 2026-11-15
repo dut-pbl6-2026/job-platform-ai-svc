@@ -21,7 +21,7 @@ class FixedEmbedder:
 
 
 def _client(emb, token: str = TOKEN) -> TestClient:
-    settings = Settings(jwt_secret="", redis_url="", ocr_concurrency=1, internal_service_token=token)
+    settings = Settings(jwt_secret="", dev_auth_enabled=True, environment="Development", redis_url="", ocr_concurrency=1, internal_service_token=token)
     return TestClient(create_app(settings, emb, None))
 
 

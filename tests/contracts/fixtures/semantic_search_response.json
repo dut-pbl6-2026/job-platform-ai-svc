@@ -1,0 +1,13 @@
+{
+  "items": [
+    {
+      "score": 0.91,
+      "job": {
+        "id": "22222222-2222-2222-2222-222222222222",
+        "title": "Java Developer",
+        "company_name": "Acme",
+        "description": "not forwarded"
+      }
+    }
+  ]
+}

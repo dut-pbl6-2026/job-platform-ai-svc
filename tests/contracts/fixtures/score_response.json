@@ -1,0 +1,70 @@
+{
+  "overall_score": 72,
+  "band": "good",
+  "breakdown": {
+    "skills": {
+      "score": 80,
+      "matching": [
+        "python",
+        "django"
+      ],
+      "missing": [
+        "kubernetes"
+      ],
+      "negated": [],
+      "extra": [
+        "aws"
+      ],
+      "evidence": {
+        "python": "Python, Django, PostgreSQL, Docker"
+      }
+    },
+    "semantic": {
+      "score": 70,
+      "title_fit": 0.61,
+      "top_matches": [
+        {
+          "requirement": "Bachelor degree in Computer Science",
+          "cv_excerpt": "Bachelor of Science in Computer Science, 2018",
+          "similarity": 0.745
+        }
+      ]
+    },
+    "experience": {
+      "score": 100,
+      "cv_years": 6.0,
+      "required_years": 3.0
+    },
+    "education": {
+      "score": 100,
+      "cv_level": "bachelor",
+      "required_level": "bachelor"
+    }
+  },
+  "suggestions": [
+    "Add Kubernetes experience to your skills section if you have it."
+  ],
+  "notes": [],
+  "components": {
+    "skills": 0.8,
+    "semantic": 0.7,
+    "experience": 1.0,
+    "education": 1.0
+  },
+  "raw_semantic": 0.66,
+  "lang_pair": "en-en",
+  "relevance": 0.9,
+  "warnings": [],
+  "meta": {
+    "parser": "text",
+    "pages": 1,
+    "pages_processed": 1,
+    "language": "en",
+    "ruleset": "v1",
+    "params": "2026-01",
+    "model": "paraphrase-multilingual-MiniLM-L12-v2",
+    "cached": false,
+    "elapsed_ms": 42
+  },
+  "score_id": "44444444-4444-4444-4444-444444444444"
+}

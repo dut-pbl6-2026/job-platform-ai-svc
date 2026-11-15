@@ -89,7 +89,8 @@ def parse_pdf(data: bytes, settings: Settings) -> ParsedCv:
                 warnings.append("ocr_unavailable")
             continue
         try:
-            otext, conf, rotated = ocr.ocr_png(_render_png(page, settings.ocr_dpi), settings.ocr_langs)
+            png = _render_png(page, settings.ocr_dpi)
+            otext, conf, rotated = ocr.ocr_png(png, settings.ocr_langs, settings.ocr_timeout_seconds)
         except Exception:  # noqa: BLE001
             warnings.append(f"ocr_failed:page{i + 1}")
             continue
