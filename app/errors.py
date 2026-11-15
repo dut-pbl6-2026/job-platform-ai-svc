@@ -25,6 +25,12 @@ class ScoreNotFound(ApiError):
     status, code, title = 404, "score_not_found", "Score not found"
 
 
+class SessionNotFound(ApiError):
+    """Missing, expired and somebody else's chat session look the same."""
+
+    status, code, title = 404, "session_not_found", "Chat session not found"
+
+
 class FileTooLarge(ApiError):
     status, code, title = 413, "file_too_large", "File too large"
 
@@ -61,3 +67,9 @@ class JobServiceUnavailable(ApiError):
 
 class Busy(ApiError):
     status, code, title = 503, "busy", "Service busy, retry shortly"
+
+
+class SearchUnavailable(ApiError):
+    """search-svc is not configured, unreachable or failing. Used inside the chat stream as an error event."""
+
+    status, code, title = 503, "search_service_unavailable", "Search service unavailable"
