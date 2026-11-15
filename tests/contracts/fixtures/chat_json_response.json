@@ -1,0 +1,11 @@
+{
+  "response": "Mình tìm thấy 1 tin phù hợp với Java tại Hà Nội:",
+  "sessionId": "33333333-3333-3333-3333-333333333333",
+  "jobs": [
+    {
+      "id": "22222222-2222-2222-2222-222222222222",
+      "title": "Java Developer",
+      "company": "Acme"
+    }
+  ]
+}

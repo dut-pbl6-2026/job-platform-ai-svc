@@ -1,0 +1,7 @@
+{
+  "type": "https://job-platform/errors/file_too_large",
+  "title": "File too large",
+  "status": 413,
+  "detail": "Maximum upload size is 5 MB.",
+  "code": "file_too_large"
+}

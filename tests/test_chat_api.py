@@ -40,7 +40,7 @@ def search() -> FakeSearch:
 
 @pytest.fixture
 def chat_client(emb, search):
-    settings = Settings(jwt_secret="", redis_url="", job_service_url="http://job.test", ocr_concurrency=1)
+    settings = Settings(jwt_secret="", dev_auth_enabled=True, environment="Development", redis_url="", job_service_url="http://job.test", ocr_concurrency=1)
     with TestClient(create_app(settings, emb, None, search_client=search)) as c:
         yield c
 
@@ -145,7 +145,7 @@ def test_both_readers_handle_template_answers_with_newlines_and_vietnamese(chat_
 
 
 def test_search_failure_streams_an_error_event_and_a_text_answer(emb):
-    settings = Settings(jwt_secret="", redis_url="", ocr_concurrency=1)
+    settings = Settings(jwt_secret="", dev_auth_enabled=True, environment="Development", redis_url="", ocr_concurrency=1)
     with TestClient(create_app(settings, emb, None, search_client=FakeSearch(error=SearchUnavailable("down")))) as c:
         r = chat(c, "tìm việc Java")
         assert r.status_code == 200  # the stream has started; the failure is an event, not a status
@@ -158,7 +158,7 @@ def test_search_failure_streams_an_error_event_and_a_text_answer(emb):
 
 
 def test_unconfigured_search_takes_the_failure_path(emb):
-    settings = Settings(jwt_secret="", redis_url="", ocr_concurrency=1)  # search_service_url empty
+    settings = Settings(jwt_secret="", dev_auth_enabled=True, environment="Development", redis_url="", ocr_concurrency=1)  # search_service_url empty
     with TestClient(create_app(settings, emb, None)) as c:
         r = chat(c, "tìm việc Java")
         assert any(e == "error" for e, _ in parse_frames(r.text))
@@ -227,7 +227,7 @@ def test_non_uuid_session_ids_are_no_ops_not_errors(chat_client):
 
 def test_session_store_is_keyed_by_the_prefixed_canonical_id_in_redis(emb):
     stub = StubRedis()
-    settings = Settings(jwt_secret="", redis_url="", ocr_concurrency=1)
+    settings = Settings(jwt_secret="", dev_auth_enabled=True, environment="Development", redis_url="", ocr_concurrency=1)
     with TestClient(create_app(settings, emb, None, redis_client=stub, search_client=FakeSearch())) as c:
         sid = web_reader(chat(c, "viết CV").text)[2]
     assert f"ai:chat:{sid}" in stub.data and stub.ttls[f"ai:chat:{sid}"] == 24 * 3600
@@ -301,7 +301,7 @@ def test_non_json_body_is_400(chat_client):
 
 
 def test_chat_is_rate_limited_before_the_stream_starts(emb, search):
-    settings = Settings(jwt_secret="", redis_url="", ocr_concurrency=1, chat_rate_per_hour=2)
+    settings = Settings(jwt_secret="", dev_auth_enabled=True, environment="Development", redis_url="", ocr_concurrency=1, chat_rate_per_hour=2)
     with TestClient(create_app(settings, emb, None, search_client=search)) as c:
         assert chat(c, "viết CV").status_code == 200
         assert chat(c, "viết CV").status_code == 200
@@ -311,7 +311,7 @@ def test_chat_is_rate_limited_before_the_stream_starts(emb, search):
 
 
 def test_session_endpoints_are_not_rate_limited(emb, search):
-    settings = Settings(jwt_secret="", redis_url="", ocr_concurrency=1, chat_rate_per_hour=1)
+    settings = Settings(jwt_secret="", dev_auth_enabled=True, environment="Development", redis_url="", ocr_concurrency=1, chat_rate_per_hour=1)
     with TestClient(create_app(settings, emb, None, search_client=search)) as c:
         for _ in range(5):
             assert c.post("/api/ai/session", headers=ALICE).status_code == 201

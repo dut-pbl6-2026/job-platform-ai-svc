@@ -4,13 +4,15 @@ import logging
 import uuid
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
+from typing import Annotated
 
-from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import JSONResponse, Response, StreamingResponse
 
 from app import service
-from app.auth import current_user
+from app.auth import current_user, validate_auth
+from app.body_limit import BodyLimitMiddleware
 from app.cache import ResultCache, connect
 from app.chat import engine
 from app.chat.search import SearchClient
@@ -35,10 +37,18 @@ def log_level(name: str) -> str:
 
 
 def build_embedder(settings: Settings) -> Embedder:
+    """The ONNX model, or - only when EMBEDDER_FALLBACK=hashing is set - the degraded hashing embedder.
+
+    Without the opt-in a load failure propagates and startup fails: silently scoring with hashing vectors
+    would return wrong scores with a healthy-looking service.
+    """
     try:
         return OnnxEmbedder(settings.embedding_model, settings.embedding_cache_dir)  # probes dim + warms up in __init__
     except Exception:
-        log.exception("Embedding model failed to load; falling back to hashing embedder (degraded quality)")
+        if settings.embedder_fallback != "hashing":
+            log.exception("Embedding model failed to load; refusing to start (set EMBEDDER_FALLBACK=hashing to run degraded)")
+            raise
+        log.error("Embedding model failed to load; EMBEDDER_FALLBACK=hashing, serving DEGRADED scores from the hashing embedder")
         return HashingEmbedder()
 
 
@@ -53,6 +63,7 @@ def create_app(
     search_client: SearchClient | None = None,
 ) -> FastAPI:
     settings = settings or get_settings()
+    validate_auth(settings)  # fail closed: no start without a verifiable identity configuration
     logging.basicConfig(level=log_level(settings.log_level))
 
     @asynccontextmanager
@@ -73,6 +84,15 @@ def create_app(
         await app.state.search.close()
 
     app = FastAPI(title="job-platform-ai-svc", version="0.1.0", lifespan=lifespan)
+    app.add_middleware(
+        BodyLimitMiddleware, max_bytes=settings.max_upload_bytes + settings.max_body_slack_bytes,
+        detail=f"Maximum upload size is {settings.max_upload_bytes // (1024 * 1024)} MB.",
+    )
+
+    def auth_user(request: Request) -> str:
+        return current_user(request, settings)
+
+    UserId = Annotated[str, Depends(auth_user)]  # runs before body validation, so 401 wins over 422
 
     @app.exception_handler(ApiError)
     async def api_error(_: Request, exc: ApiError):
@@ -102,8 +122,7 @@ def create_app(
         return {**result, "score_id": score_id}
 
     @app.post("/api/ai/score-resume")
-    async def score_resume(request: Request, cv_file: UploadFile = File(...), job_id: str = Form(...), lang: str | None = Form(None)):
-        user = current_user(request, settings)
+    async def score_resume(user: UserId, cv_file: UploadFile = File(...), job_id: str = Form(...), lang: str | None = Form(None)):
         if not app.state.limiter.allow(user):
             raise RateLimited("Rate limit exceeded; try again in a minute.")
         data = await cv_file.read(settings.max_upload_bytes + 1)
@@ -134,9 +153,8 @@ def create_app(
         await run_in_threadpool(app.state.cache.set, key, result)
         return await _remember(user, score_id, key, job_id.strip(), result)
 
-    async def _own_record(request: Request, score_id: str) -> tuple[str, dict]:
-        """Authenticate, validate the id, and load the caller's record. Anything else is 404."""
-        user = current_user(request, settings)
+    async def _own_record(user: str, score_id: str) -> tuple[str, dict]:
+        """Validate the id and load the caller's record. Anything else is 404."""
         try:
             score_id = str(uuid.UUID(score_id))  # canonical form only; nothing else is ever used as a Redis key
         except ValueError:
@@ -147,47 +165,45 @@ def create_app(
         return score_id, record
 
     @app.get("/api/ai/score-resume/{score_id}")
-    async def get_score(request: Request, score_id: str):
-        score_id, record = await _own_record(request, score_id)
+    async def get_score(user: UserId, score_id: str):
+        score_id, record = await _own_record(user, score_id)
         return {**record["result"], "score_id": score_id}
 
     @app.delete("/api/ai/score-resume/{score_id}", status_code=204)
-    async def delete_score(request: Request, score_id: str):
-        score_id, record = await _own_record(request, score_id)
+    async def delete_score(user: UserId, score_id: str):
+        score_id, record = await _own_record(user, score_id)
         # the record and the shared 24 h entry for the same file: "delete" must leave nothing derived from the CV
         await run_in_threadpool(app.state.records.delete, score_id)
         await run_in_threadpool(app.state.cache.delete, record["cache_key"])
         return Response(status_code=204)
 
-    async def _own_session(request: Request, session_id: str) -> tuple[str, str, dict | None]:
-        user = current_user(request, settings)
+    async def _own_session(user: str, session_id: str) -> tuple[str, str, dict | None]:
         sid = canonical_id(session_id)
         record = await run_in_threadpool(app.state.chat.load, user, sid) if sid else None
         return user, sid or "", record
 
     @app.post("/api/ai/session", status_code=201)
-    async def create_session(request: Request):
-        user = current_user(request, settings)
+    async def create_session(user: UserId):
         sid = str(uuid.uuid4())
         record = await run_in_threadpool(app.state.chat.save, user, sid, [])
         return {"sessionId": sid, "createdAt": record["created_at"]}
 
     @app.get("/api/ai/session/{session_id}/history")
-    async def session_history(request: Request, session_id: str):
+    async def session_history(user: UserId, session_id: str):
         # missing, expired and other users' sessions all read as empty: no 404 for the web client to misread
-        _, _, record = await _own_session(request, session_id)
+        _, _, record = await _own_session(user, session_id)
         return record["messages"] if record else []
 
     @app.get("/api/ai/session/{session_id}")
-    async def get_session(request: Request, session_id: str):
-        _, sid, record = await _own_session(request, session_id)
+    async def get_session(user: UserId, session_id: str):
+        _, sid, record = await _own_session(user, session_id)
         if not record:
             raise SessionNotFound("No chat session with this id for the current user (it may have expired).")
         return {"sessionId": sid, "createdAt": record["created_at"], "updatedAt": record["updated_at"], "messages": record["messages"]}
 
     @app.delete("/api/ai/session/{session_id}", status_code=204)
-    async def delete_session(request: Request, session_id: str):
-        user, sid, _ = await _own_session(request, session_id)
+    async def delete_session(user: UserId, session_id: str):
+        _, sid, _ = await _own_session(user, session_id)
         if sid:
             await run_in_threadpool(app.state.chat.delete, user, sid)
         return Response(status_code=204)
@@ -210,8 +226,7 @@ def create_app(
         return {"message": message.strip(), "session_id": body.get("sessionId"), "stream": stream}
 
     @app.post("/api/ai/chat")
-    async def chat(request: Request):
-        user = current_user(request, settings)
+    async def chat(user: UserId, request: Request):
         body = await _chat_body(request)
         if not app.state.chat_limiter.allow(user):
             raise RateLimited("Too many chat messages; try again later.")

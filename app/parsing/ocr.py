@@ -15,8 +15,9 @@ def ocr_available() -> bool:
         return False
 
 
-def _ocr_image(img: Image.Image, langs: str) -> tuple[str, float]:
-    data = pytesseract.image_to_data(img, lang=langs, config="--psm 3", output_type=pytesseract.Output.DICT)
+def _ocr_image(img: Image.Image, langs: str, timeout: float) -> tuple[str, float]:
+    # timeout: pytesseract raises RuntimeError("Tesseract process timeout") and kills the process.
+    data = pytesseract.image_to_data(img, lang=langs, config="--psm 3", output_type=pytesseract.Output.DICT, timeout=timeout)
     lines: dict[tuple[int, int, int], list[str]] = {}
     confs: list[float] = []
     for i, word in enumerate(data["text"]):
@@ -34,20 +35,23 @@ def _ocr_image(img: Image.Image, langs: str) -> tuple[str, float]:
     return text, (sum(confs) / len(confs) if confs else 0.0)
 
 
-def ocr_png(png_bytes: bytes, langs: str) -> tuple[str, float, bool]:
-    """OCR one page image. Returns (text, mean confidence, rotated). Retries once rotated by OSD when confidence is low."""
+def ocr_png(png_bytes: bytes, langs: str, timeout: float) -> tuple[str, float, bool]:
+    """OCR one page image. Returns (text, mean confidence, rotated). Retries once rotated by OSD when confidence is low.
+
+    Every tesseract call is bounded by `timeout` seconds; a timeout raises RuntimeError to the caller.
+    """
     img = Image.open(io.BytesIO(png_bytes)).convert("L")
-    text, conf = _ocr_image(img, langs)
+    text, conf = _ocr_image(img, langs, timeout)
     if conf >= CONF_RETRY_BELOW and len(text) >= 40:
         return text, conf, False
     try:
-        osd = pytesseract.image_to_osd(img, output_type=pytesseract.Output.DICT)
+        osd = pytesseract.image_to_osd(img, output_type=pytesseract.Output.DICT, timeout=timeout)
         angle = int(osd.get("rotate", 0))
     except Exception:  # noqa: BLE001  (OSD fails on sparse pages)
         angle = 0
     if angle:
         rotated = img.rotate(-angle, expand=True)
-        text2, conf2 = _ocr_image(rotated, langs)
+        text2, conf2 = _ocr_image(rotated, langs, timeout)
         if conf2 > conf:
             return text2, conf2, True
     return text, conf, False

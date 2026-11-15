@@ -1,6 +1,8 @@
 """Runtime configuration. Everything comes from environment variables (no literals in code paths)."""
 from functools import lru_cache
+from typing import Literal
 
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,6 +16,7 @@ class Settings(BaseSettings):
     ocr_concurrency: int = 2
     ocr_dpi: int = 200
     ocr_langs: str = "eng+vie"
+    ocr_timeout_seconds: float = 20.0  # per tesseract call; a hung process must not hold a scoring slot forever
     max_upload_bytes: int = 5 * 1024 * 1024
     max_pages: int = 5
     rate_limit_per_min: int = 10
@@ -23,7 +26,14 @@ class Settings(BaseSettings):
     embedding_model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     embedding_cache_dir: str = "models"
     busy_timeout_seconds: float = 30.0
-    jwt_secret: str = ""  # empty => dev auth (X-User-Id header, same convention as the .NET services)
+    # Production: JWT_SECRET (>= 32 chars) is required and is the only accepted identity.
+    # X-User-Id is trusted only when JWT_SECRET is unset AND DEV_AUTH_ENABLED=true AND the .NET environment is Development.
+    jwt_secret: str = ""
+    dev_auth_enabled: bool = False
+    environment: str = Field(
+        "Production",
+        validation_alias=AliasChoices("DOTNET_ENVIRONMENT", "ASPNETCORE_ENVIRONMENT", "environment"),
+    )
     jwt_issuer: str = "job-platform"
     jwt_audience: str = "job-platform"
     job_http_timeout_seconds: float = 5.0
@@ -32,6 +42,10 @@ class Settings(BaseSettings):
     chat_rate_per_hour: int = 20  # per user, token bucket with a one-hour window
     chat_session_ttl_seconds: int = 24 * 3600  # sliding: refreshed on every message
     internal_service_token: str = ""  # bearer for /api/internal/* (search-svc); empty => those endpoints refuse every call
+    # Hashing vectors are a degraded fallback. Only used when the ONNX model fails to load AND this is set to "hashing".
+    embedder_fallback: Literal["", "hashing"] = ""
+    # Hard cap on the whole request body (multipart overhead is added on top of max_upload_bytes).
+    max_body_slack_bytes: int = 64 * 1024
 
 
 @lru_cache

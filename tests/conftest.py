@@ -32,7 +32,7 @@ Bachelor of Science in Computer Science, 2018
 
 @pytest.fixture
 def settings() -> Settings:
-    return Settings(job_service_url="http://job.test", ocr_concurrency=1, jwt_secret="", redis_url="")
+    return Settings(job_service_url="http://job.test", ocr_concurrency=1, jwt_secret="", dev_auth_enabled=True, environment="Development", redis_url="")
 
 
 @pytest.fixture
