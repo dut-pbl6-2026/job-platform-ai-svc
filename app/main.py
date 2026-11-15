@@ -19,6 +19,7 @@ from app.chat.sse import frame, token_frames
 from app.config import Settings, get_settings
 from app.embed import Embedder, HashingEmbedder, OnnxEmbedder
 from app.errors import ApiError, BadRequest, Busy, FileTooLarge, RateLimited, ScoreNotFound, SessionNotFound
+from app.internal import internal_router
 from app.job_client import JobClient
 from app.parsing.ocr import ocr_available
 from app.ratelimit import RateLimiter
@@ -35,9 +36,7 @@ def log_level(name: str) -> str:
 
 def build_embedder(settings: Settings) -> Embedder:
     try:
-        emb = OnnxEmbedder(settings.embedding_model, settings.embedding_cache_dir)
-        emb.embed(["warm-up"])  # first inference pays the session start-up cost, not the first user
-        return emb
+        return OnnxEmbedder(settings.embedding_model, settings.embedding_cache_dir)  # probes dim + warms up in __init__
     except Exception:
         log.exception("Embedding model failed to load; falling back to hashing embedder (degraded quality)")
         return HashingEmbedder()
@@ -94,6 +93,7 @@ def create_app(
 
     app.get("/health")(health)
     app.get("/api/ai/health")(health)
+    app.include_router(internal_router(settings))
 
     async def _remember(user: str, score_id: str, key: str, job_id: str, result: dict) -> dict:
         """Store the response for its owner and return it with its score_id (the shared cache never holds the id)."""
