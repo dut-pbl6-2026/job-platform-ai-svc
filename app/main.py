@@ -11,7 +11,7 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import JSONResponse, Response, StreamingResponse
 
 from app import service
-from app.auth import current_user, validate_auth
+from app.auth import Caller, current_user, scoring_caller, validate_auth
 from app.body_limit import BodyLimitMiddleware
 from app.cache import ResultCache, connect
 from app.chat import engine
@@ -92,7 +92,11 @@ def create_app(
     def auth_user(request: Request) -> str:
         return current_user(request, settings)
 
+    def score_caller(request: Request) -> Caller:
+        return scoring_caller(request, settings)
+
     UserId = Annotated[str, Depends(auth_user)]  # runs before body validation, so 401 wins over 422
+    ScoringCaller = Annotated[Caller, Depends(score_caller)]  # score-resume only: also accepts AI_SCORING_SERVICE_TOKEN
 
     @app.exception_handler(ApiError)
     async def api_error(_: Request, exc: ApiError):
@@ -122,8 +126,10 @@ def create_app(
         return {**result, "score_id": score_id}
 
     @app.post("/api/ai/score-resume")
-    async def score_resume(user: UserId, cv_file: UploadFile = File(...), job_id: str = Form(...), lang: str | None = Form(None)):
-        if not app.state.limiter.allow(user):
+    async def score_resume(caller: ScoringCaller, cv_file: UploadFile = File(...), job_id: str = Form(...), lang: str | None = Form(None)):
+        user = caller.subject
+        # the scoring service is exempt from the per-user cap only; the global concurrency semaphore below still applies
+        if not caller.scoring_service and not app.state.limiter.allow(user):
             raise RateLimited("Rate limit exceeded; try again in a minute.")
         data = await cv_file.read(settings.max_upload_bytes + 1)
         if len(data) > settings.max_upload_bytes:
