@@ -9,7 +9,7 @@
 - No literals for URLs/secrets/ports in code — read from env (`app/config.py`).
 - Embedding caller identity: `AI_INTERNAL_TOKEN_FOR_SEARCH` (search-svc's key, `<CALLEE>_INTERNAL_TOKEN_FOR_<CALLER>` naming) is the only key accepted on `/api/internal/*`. Required outside Development (>= 32 chars, must differ from `AI_SCORING_SERVICE_TOKEN`), so startup refuses without it. No shared fallback.
 - Scoring service identity: `AI_SCORING_SERVICE_TOKEN` (env only; >= 32 chars in Production) is a bearer for app-svc's background scoring. It is accepted only by `POST /api/ai/score-resume`, as subject `app-svc-scoring` (role service), exempt from the per-user cap only (the global `OCR_CONCURRENCY` semaphore still applies), and refused with 401 on every other route. Compared with `hmac.compare_digest` on SHA-256 digests; an empty token matches nothing.
-- Identity fails closed: startup needs `JWT_SECRET` (>= 32 chars). `X-User-Id` is trusted only with `DEV_AUTH_ENABLED=true` in a Development environment (`app/auth.py`). The embedder never silently degrades: a model load failure stops startup unless `EMBEDDER_FALLBACK=hashing`.
+- Identity fails closed: startup needs `JWT_METADATA_ADDRESS` (auth-svc discovery URL; RS256 keys from its JWKS, no shared secret). `X-User-Id` is trusted only with `DEV_AUTH_ENABLED=true` in a Development environment (`app/auth.py`). The embedder never silently degrades: a model load failure stops startup unless `EMBEDDER_FALLBACK=hashing`.
 
 ## Commands (mise)
 `mise run install` · `models` (one-off download) · `dev` (:6000) · `test` · `lint` · `verify` · `eval` (240-pair ablation) · `eval-grid` (production fit)

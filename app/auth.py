@@ -1,27 +1,72 @@
-"""Caller identity. Production: HS256 JWT issued by auth-svc (same secret/issuer/audience as the .NET services).
+"""Caller identity. Production: RS256 JWT issued by auth-svc, verified with the public keys from its JWKS.
 
-Fail closed: the service refuses to start unless JWT_SECRET (>= 32 chars) is set, or the explicit dev mode is on
-(DEV_AUTH_ENABLED=true AND environment Development). Only in dev mode is the X-User-Id header trusted, and only
-when JWT_SECRET is unset. `validate_auth` is called once at app creation; `current_user` re-checks the same rule.
+Fail closed: the service refuses to start unless JWT_METADATA_ADDRESS (auth-svc discovery URL) is set, or the
+explicit dev mode is on (DEV_AUTH_ENABLED=true AND environment Development). Only in dev mode is the X-User-Id
+header trusted, and only when JWT_METADATA_ADDRESS is unset. `validate_auth` is called once at app creation;
+`current_user` re-checks the same rule.
+
+Tokens: algorithm RS256 only, `kid` required and looked up in the published key set, `iss`/`aud`/`exp`/`sub` checked.
+Keys are cached per discovery address; PyJWKClient refreshes at most every JWKS_CACHE_SECONDS and on an unknown kid.
+A failed key load is a 401 (fail closed) and is retried on the next request.
 
 Scoring service identity: app-svc scores applications in the background with AI_SCORING_SERVICE_TOKEN as a bearer.
 That token is accepted only by POST /api/ai/score-resume (`scoring_caller`); every other route refuses it (`current_user`).
 """
 import hashlib
 import hmac
+import logging
+import threading
 from dataclasses import dataclass
 
+import httpx
 import jwt
 from fastapi import HTTPException, Request
 
 from app.config import Settings
 
-MIN_JWT_SECRET_LENGTH = 32
+JWKS_CACHE_SECONDS = 900  # bounded refresh of the published key set
+JWKS_HTTP_TIMEOUT_SECONDS = 5.0
 MIN_SCORING_TOKEN_LENGTH = 32  # enforced in Production only
 MIN_INTERNAL_TOKEN_LENGTH = 32  # AI_INTERNAL_TOKEN_FOR_SEARCH, enforced in Production only
 SCORING_SUBJECT = "app-svc-scoring"
 DEVELOPMENT = "development"
 _BEARER = "bearer "
+_LOG = logging.getLogger("ai.auth")
+
+
+class _JwksSource:
+    """Signing keys for one auth-svc discovery address. Built lazily; a failed build is not cached."""
+
+    def __init__(self, metadata_address: str) -> None:
+        self._metadata_address = metadata_address
+        self._client: jwt.PyJWKClient | None = None
+        self._lock = threading.Lock()
+
+    def _client_or_build(self) -> jwt.PyJWKClient:
+        with self._lock:
+            if self._client is None:
+                response = httpx.get(self._metadata_address, timeout=JWKS_HTTP_TIMEOUT_SECONDS)
+                response.raise_for_status()
+                jwks_uri = response.json()["jwks_uri"]
+                self._client = jwt.PyJWKClient(
+                    jwks_uri, cache_jwk_set=True, lifespan=JWKS_CACHE_SECONDS, timeout=JWKS_HTTP_TIMEOUT_SECONDS,
+                )
+            return self._client
+
+    def signing_key(self, token: str):
+        return self._client_or_build().get_signing_key_from_jwt(token).key
+
+
+_sources: dict[str, _JwksSource] = {}
+_sources_lock = threading.Lock()
+
+
+def _source_for(metadata_address: str) -> _JwksSource:
+    with _sources_lock:
+        source = _sources.get(metadata_address)
+        if source is None:
+            source = _sources[metadata_address] = _JwksSource(metadata_address)
+        return source
 
 
 class AuthConfigError(RuntimeError):
@@ -75,13 +120,13 @@ def validate_auth(settings: Settings) -> None:
     if internal and internal == settings.ai_scoring_service_token:
         # Otherwise app-svc's scoring key would also open the internal embedding endpoints.
         raise AuthConfigError("AI_INTERNAL_TOKEN_FOR_SEARCH must differ from AI_SCORING_SERVICE_TOKEN.")
-    if settings.jwt_secret:
-        if len(settings.jwt_secret) < MIN_JWT_SECRET_LENGTH:
-            raise AuthConfigError(f"JWT_SECRET must be at least {MIN_JWT_SECRET_LENGTH} characters.")
+    if settings.jwt_metadata_address:
+        if not settings.jwt_metadata_address.startswith(("http://", "https://")):
+            raise AuthConfigError("JWT_METADATA_ADDRESS must be an http(s) URL (auth-svc discovery document).")
         return
     if not dev_auth_allowed(settings):
         raise AuthConfigError(
-            f"JWT_SECRET (at least {MIN_JWT_SECRET_LENGTH} characters) is required. "
+            "JWT_METADATA_ADDRESS (auth-svc discovery URL) is required. "
             "For local development only: DEV_AUTH_ENABLED=true with environment Development."
         )
 
@@ -91,16 +136,21 @@ def current_user(request: Request, settings: Settings) -> str:
     if is_scoring_token(request, settings):
         # the scoring token is a credential for one route only; it is never a user identity anywhere else
         raise HTTPException(401, detail={"code": "unauthorized", "title": "Invalid token"})
-    if settings.jwt_secret:
+    if settings.jwt_metadata_address:
         header = request.headers.get("authorization", "")
         if not header.lower().startswith(_BEARER):
             raise HTTPException(401, detail={"code": "unauthorized", "title": "Missing bearer token"})
+        token = header[7:].strip()
         try:
+            if not jwt.get_unverified_header(token).get("kid"):
+                raise jwt.InvalidTokenError("token has no kid")
+            key = _source_for(settings.jwt_metadata_address).signing_key(token)
             claims = jwt.decode(
-                header[7:], settings.jwt_secret, algorithms=["HS256"], issuer=settings.jwt_issuer, audience=settings.jwt_audience,
-                options={"require": ["exp"]},
+                token, key, algorithms=["RS256"], issuer=settings.jwt_issuer, audience=settings.jwt_audience,
+                options={"require": ["exp", "iss", "aud", "sub"]},
             )
-        except jwt.PyJWTError as exc:
+        except Exception as exc:  # every failure to verify the token, including a JWKS outage, is a 401
+            _LOG.info("Token rejected: %s", type(exc).__name__)
             raise HTTPException(401, detail={"code": "unauthorized", "title": "Invalid token"}) from exc
         uid = claims.get("sub") or claims.get("nameid") or claims.get("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
         if not uid:

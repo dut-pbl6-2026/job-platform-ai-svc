@@ -1,5 +1,4 @@
 """Internal embed endpoints (search-svc): token gate, batch shape, validation, and refusal to serve placeholder vectors."""
-import jwt
 import numpy as np
 import pytest
 from fastapi.testclient import TestClient
@@ -8,11 +7,11 @@ from app.auth import AuthConfigError
 from app.config import Settings
 from app.embed import HashingEmbedder
 from app.main import create_app
+from tests.jwks_support import METADATA_URL, sign
 
 TOKEN = "t" * 40  # AI_INTERNAL_TOKEN_FOR_SEARCH for these tests
 SHARED_TOKEN = "shared-internal-token-0123456789abcdef"  # the old INTERNAL_SERVICE_TOKEN value: must not open this API
 SCORING_TOKEN = "s" * 40  # AI_SCORING_SERVICE_TOKEN (app-svc): a different caller
-JWT_SECRET = "j" * 40
 
 
 class FixedEmbedder:
@@ -26,7 +25,7 @@ class FixedEmbedder:
 
 
 def _client(emb, token: str = TOKEN) -> TestClient:
-    settings = Settings(jwt_secret="", dev_auth_enabled=True, environment="Development", redis_url="", ocr_concurrency=1, ai_internal_token_for_search=token)
+    settings = Settings(jwt_metadata_address="", dev_auth_enabled=True, environment="Development", redis_url="", ocr_concurrency=1, ai_internal_token_for_search=token)
     return TestClient(create_app(settings, emb, None))
 
 
@@ -96,7 +95,7 @@ def test_placeholder_hashing_embedder_is_refused_with_503():
 
 def _production_client(emb, **keys) -> TestClient:
     # Production (the default environment), JWT mode: the internal routes must still take only the search key.
-    settings = Settings(_env_file=None, jwt_secret=JWT_SECRET, redis_url="", ocr_concurrency=1, **keys)
+    settings = Settings(_env_file=None, jwt_metadata_address=METADATA_URL, redis_url="", ocr_concurrency=1, **keys)
     return TestClient(create_app(settings, emb, None))
 
 
@@ -104,7 +103,7 @@ def test_shared_token_is_rejected_and_only_the_search_key_is_accepted(monkeypatc
     # Built from the environment as in production: the shared token is set, but only the caller's own key counts.
     monkeypatch.setenv("INTERNAL_SERVICE_TOKEN", SHARED_TOKEN)
     monkeypatch.setenv("AI_INTERNAL_TOKEN_FOR_SEARCH", TOKEN)
-    settings = Settings(_env_file=None, jwt_secret=JWT_SECRET, redis_url="", ocr_concurrency=1)
+    settings = Settings(_env_file=None, jwt_metadata_address=METADATA_URL, redis_url="", ocr_concurrency=1)
     assert settings.ai_internal_token_for_search == TOKEN
     with TestClient(create_app(settings, FixedEmbedder(), None)) as c:
         shared = {"Authorization": f"Bearer {SHARED_TOKEN}"}
@@ -120,7 +119,7 @@ def test_another_callers_key_is_rejected_on_both_internal_routes():
         scoring = {"Authorization": f"Bearer {SCORING_TOKEN}"}
         assert c.post("/api/internal/embed", json={"texts": ["a"]}, headers=scoring).status_code == 401
         assert c.get("/api/internal/embed/info", headers=scoring).status_code == 401
-        user = {"Authorization": f"Bearer {jwt.encode({'sub': 'alice', 'iss': 'job-platform', 'aud': 'job-platform', 'exp': 4102444800}, JWT_SECRET, algorithm='HS256')}"}
+        user = {"Authorization": f"Bearer {sign({'sub': 'alice', 'iss': 'job-platform', 'aud': 'job-platform', 'exp': 4102444800})}"}
         assert c.get("/api/internal/embed/info", headers=user).status_code == 401
         assert c.get("/api/internal/embed/info", headers={"Authorization": f"Bearer {TOKEN}"}).status_code == 200
 

@@ -20,7 +20,7 @@ description = "Fit weights + calibration + score map on the 5 760-pair label gri
 
 [tasks.dev]
 run = "uv run uvicorn app.main:create_app --factory --reload --port 6000"
-description = "Run the service locally on :6000 (needs JWT_SECRET, or DEV_AUTH_ENABLED=true with ASPNETCORE_ENVIRONMENT=Development for X-User-Id)"
+description = "Run the service locally on :6000 (needs JWT_METADATA_ADDRESS, or DEV_AUTH_ENABLED=true with ASPNETCORE_ENVIRONMENT=Development for X-User-Id)"
 
 [tasks.test]
 run = "uv run pytest -q"

@@ -26,9 +26,9 @@ class Settings(BaseSettings):
     embedding_model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     embedding_cache_dir: str = "models"
     busy_timeout_seconds: float = 30.0
-    # Production: JWT_SECRET (>= 32 chars) is required and is the only accepted identity.
-    # X-User-Id is trusted only when JWT_SECRET is unset AND DEV_AUTH_ENABLED=true AND the .NET environment is Development.
-    jwt_secret: str = ""
+    # Production: JWT_METADATA_ADDRESS (auth-svc discovery URL) is required; tokens are RS256 verified against its JWKS.
+    # X-User-Id is trusted only when JWT_METADATA_ADDRESS is unset AND DEV_AUTH_ENABLED=true AND the .NET environment is Development.
+    jwt_metadata_address: str = ""
     dev_auth_enabled: bool = False
     environment: str = Field(
         "Production",

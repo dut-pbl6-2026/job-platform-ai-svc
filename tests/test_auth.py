@@ -1,13 +1,12 @@
-"""Auth policy (unit): startup validation matrix and the per-request identity rule. No network, no model."""
-import jwt
+"""Auth policy (unit): startup validation matrix and the per-request identity rule. No model; JWKS is loopback."""
 import pytest
 from fastapi import HTTPException
 from starlette.requests import Request
 
 from app.auth import AuthConfigError, current_user, validate_auth
 from app.config import Settings
+from tests.jwks_support import METADATA_URL, claims, sign, sign_hs256
 
-SECRET = "s" * 32
 DEV = {"dev_auth_enabled": True, "environment": "Development"}
 INTERNAL = "i" * 40  # AI_INTERNAL_TOKEN_FOR_SEARCH: required outside Development
 
@@ -22,10 +21,10 @@ def request(headers: dict[str, str] | None = None) -> Request:
 @pytest.mark.parametrize(
     "kwargs",
     [
-        {"jwt_secret": SECRET},  # production: JWT only
-        {"jwt_secret": "x" * 64, **DEV},  # a valid secret wins even in dev
-        {"jwt_secret": "", **DEV},  # explicit local dev: no secret, Development, flag on
-        {"jwt_secret": "", **DEV, "environment": "development"},  # .NET names are case-insensitive
+        {"jwt_metadata_address": METADATA_URL},  # production: JWT only
+        {"jwt_metadata_address": METADATA_URL, **DEV},  # a configured JWKS wins even in dev
+        {"jwt_metadata_address": "", **DEV},  # explicit local dev: no discovery address, Development, flag on
+        {"jwt_metadata_address": "", **DEV, "environment": "development"},  # .NET names are case-insensitive
     ],
 )
 def test_valid_identity_configurations_start(kwargs):
@@ -35,23 +34,21 @@ def test_valid_identity_configurations_start(kwargs):
 @pytest.mark.parametrize(
     "kwargs,message",
     [
-        ({"jwt_secret": ""}, "JWT_SECRET"),  # missing secret, no dev flag
-        ({"jwt_secret": "", "dev_auth_enabled": True}, "only allowed"),  # the flag outside Development is a misconfiguration
-        ({"jwt_secret": "", "environment": "Development"}, "JWT_SECRET"),  # Development alone is not enough
-        ({"jwt_secret": "s" * 31}, "at least 32"),  # one character short
-        ({"jwt_secret": "s" * 31, **DEV}, "at least 32"),  # a short secret never falls back to dev
-        ({"jwt_secret": "", "dev_auth_enabled": True, "environment": "Production"}, "only allowed"),
-        ({"jwt_secret": SECRET, "dev_auth_enabled": True, "environment": "Production"}, "only allowed"),
+        ({"jwt_metadata_address": ""}, "JWT_METADATA_ADDRESS"),  # missing address, no dev flag
+        ({"jwt_metadata_address": "", "dev_auth_enabled": True}, "only allowed"),  # the flag outside Development is a misconfiguration
+        ({"jwt_metadata_address": "", "environment": "Development"}, "JWT_METADATA_ADDRESS"),  # Development alone is not enough
+        ({"jwt_metadata_address": "auth-svc:5001/.well-known"}, "http"),  # not a URL
+        ({"jwt_metadata_address": "", "dev_auth_enabled": True, "environment": "Production"}, "only allowed"),
+        ({"jwt_metadata_address": METADATA_URL, "dev_auth_enabled": True, "environment": "Production"}, "only allowed"),
     ],
 )
 def test_unverifiable_configurations_refuse_to_start(kwargs, message):
-    with pytest.raises(AuthConfigError, match=message) as info:
+    with pytest.raises(AuthConfigError, match=message):
         validate_auth(Settings(**{"ai_internal_token_for_search": INTERNAL, **kwargs}))
-    assert SECRET not in str(info.value)  # errors never echo the secret
 
 
 def test_default_environment_is_production():
-    assert Settings(jwt_secret="").environment == "Production"
+    assert Settings(jwt_metadata_address="").environment == "Production"
 
 
 def test_environment_is_read_from_the_shared_dotnet_variables(monkeypatch):
@@ -65,29 +62,53 @@ def test_environment_is_read_from_the_shared_dotnet_variables(monkeypatch):
 
 # --- per-request identity ---------------------------------------------------
 
-def token(**claims) -> str:
-    base = {"sub": "user-1", "iss": "job-platform", "aud": "job-platform", "exp": 4102444800}
-    return jwt.encode({**base, **claims}, SECRET, algorithm="HS256")
-
-
 def test_jwt_mode_ignores_x_user_id_entirely():
-    settings = Settings(jwt_secret=SECRET)
+    settings = Settings(jwt_metadata_address=METADATA_URL)
     with pytest.raises(HTTPException) as info:
         current_user(request({"X-User-Id": "victim"}), settings)
     assert info.value.status_code == 401
 
 
-def test_jwt_mode_reads_the_subject_from_a_valid_token():
-    settings = Settings(jwt_secret=SECRET)
-    assert current_user(request({"Authorization": f"Bearer {token()}"}), settings) == "user-1"
+def test_jwt_mode_reads_the_subject_from_a_valid_rs256_token():
+    settings = Settings(jwt_metadata_address=METADATA_URL)
+    assert current_user(request({"Authorization": f"Bearer {sign()}"}), settings) == "user-1"
 
 
-@pytest.mark.parametrize("header", [None, "Basic abc", "Bearer not-a-jwt", f"Bearer {token(exp=1)}", f"Bearer {token(aud='other')}"])
-def test_jwt_mode_rejects_missing_forged_expired_and_foreign_tokens(header):
-    settings = Settings(jwt_secret=SECRET)
+@pytest.mark.parametrize(
+    "token",
+    [
+        "not-a-jwt",
+        sign(claims(exp=1)),  # expired
+        sign(claims(aud="other")),  # foreign audience
+        sign(claims(iss="other")),  # foreign issuer
+        sign({k: v for k, v in claims().items() if k != "sub"}),  # no subject
+        sign(claims(), kid=None),  # no kid
+        sign(claims(), kid="unpublished"),  # kid not in the key set
+        sign(claims(), foreign=True),  # signed by a key nobody publishes
+        sign_hs256(claims()),  # HS256 is refused, whatever the secret
+    ],
+)
+def test_jwt_mode_rejects_forged_expired_and_foreign_tokens(token):
+    settings = Settings(jwt_metadata_address=METADATA_URL)
+    with pytest.raises(HTTPException) as info:
+        current_user(request({"Authorization": f"Bearer {token}"}), settings)
+    assert info.value.status_code == 401
+
+
+@pytest.mark.parametrize("header", [None, "Basic abc"])
+def test_jwt_mode_rejects_a_missing_or_non_bearer_header(header):
+    settings = Settings(jwt_metadata_address=METADATA_URL)
     headers = {"Authorization": header} if header else {"X-User-Id": "victim"}
     with pytest.raises(HTTPException) as info:
         current_user(request(headers), settings)
+    assert info.value.status_code == 401
+
+
+def test_unreachable_discovery_fails_closed():
+    # Nothing listens on this port: the key set cannot load, so a correctly signed token is still a 401.
+    settings = Settings(jwt_metadata_address="http://127.0.0.1:9/.well-known/openid-configuration")
+    with pytest.raises(HTTPException) as info:
+        current_user(request({"Authorization": f"Bearer {sign()}"}), settings)
     assert info.value.status_code == 401
 
 
@@ -101,7 +122,7 @@ def test_dev_header_is_trusted_only_in_explicit_development_mode():
 
 # --- AI_INTERNAL_TOKEN_FOR_SEARCH (search-svc's key for /api/internal/*) ----
 
-@pytest.mark.parametrize("kwargs", [{"jwt_secret": SECRET}, {"jwt_secret": "", "environment": "Production"}])
+@pytest.mark.parametrize("kwargs", [{"jwt_metadata_address": METADATA_URL}, {"jwt_metadata_address": "", "environment": "Production"}])
 def test_missing_search_key_refuses_to_start_outside_development(kwargs):
     with pytest.raises(AuthConfigError, match="AI_INTERNAL_TOKEN_FOR_SEARCH is required") as info:
         validate_auth(Settings(**kwargs))
@@ -109,16 +130,16 @@ def test_missing_search_key_refuses_to_start_outside_development(kwargs):
 
 
 def test_missing_search_key_is_allowed_in_development():
-    validate_auth(Settings(jwt_secret="", **DEV))  # internal endpoints then refuse every call (see test_internal_api)
+    validate_auth(Settings(jwt_metadata_address="", **DEV))  # internal endpoints then refuse every call (see test_internal_api)
 
 
 def test_short_search_key_refuses_to_start_outside_development():
     with pytest.raises(AuthConfigError, match="must be at least 32"):
-        validate_auth(Settings(jwt_secret=SECRET, ai_internal_token_for_search="i" * 31))
+        validate_auth(Settings(jwt_metadata_address=METADATA_URL, ai_internal_token_for_search="i" * 31))
 
 
 def test_search_key_must_differ_from_the_scoring_key_and_never_echoes_it():
-    settings = Settings(jwt_secret=SECRET, ai_internal_token_for_search=INTERNAL, ai_scoring_service_token=INTERNAL)
+    settings = Settings(jwt_metadata_address=METADATA_URL, ai_internal_token_for_search=INTERNAL, ai_scoring_service_token=INTERNAL)
     with pytest.raises(AuthConfigError, match="must differ") as info:
         validate_auth(settings)
     assert INTERNAL not in str(info.value)

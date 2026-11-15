@@ -21,7 +21,7 @@ curl -s localhost:6000/health
 curl -s -H "Authorization: Bearer $TOKEN" -F cv_file=@cv.pdf -F job_id=<uuid> localhost:6000/api/ai/score-resume
 ```
 
-Auth: `Authorization: Bearer <JWT from auth-svc>`. The service refuses to start unless `JWT_SECRET` (at least 32 characters) is set. `X-User-Id` is trusted only in local development: `DEV_AUTH_ENABLED=true` AND `DOTNET_ENVIRONMENT`/`ASPNETCORE_ENVIRONMENT` = `Development` AND no `JWT_SECRET`. Never set `DEV_AUTH_ENABLED` outside a developer machine. Through the gateway: `POST /api/ai/score-resume` (requires login).
+Auth: `Authorization: Bearer <JWT from auth-svc>`. The service refuses to start unless `JWT_METADATA_ADDRESS` (auth-svc discovery URL, for example `http://auth-svc:5001/.well-known/openid-configuration`) is set. Tokens must be RS256 with a `kid` from that JWKS; HS256 is refused. `X-User-Id` is trusted only in local development: `DEV_AUTH_ENABLED=true` AND `DOTNET_ENVIRONMENT`/`ASPNETCORE_ENVIRONMENT` = `Development` AND no `JWT_SECRET`. Never set `DEV_AUTH_ENABLED` outside a developer machine. Through the gateway: `POST /api/ai/score-resume` (requires login).
 
 **Embedding caller (search-svc).** search-svc calls `POST /api/internal/embed` and `GET /api/internal/embed/info` with its own bearer, `AI_INTERNAL_TOKEN_FOR_SEARCH` (the name follows `<CALLEE>_INTERNAL_TOKEN_FOR_<CALLER>`; the same name is set on search-svc). Only that key is accepted on those routes; the shared `INTERNAL_SERVICE_TOKEN`, the scoring token and user JWTs are refused with 401. It is compared in constant time on SHA-256 digests. Outside Development startup fails if it is unset or shorter than 32 characters, or equal to `AI_SCORING_SERVICE_TOKEN`. In Development an unset key makes those routes refuse every call.
 
