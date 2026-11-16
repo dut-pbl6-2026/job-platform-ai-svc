@@ -45,7 +45,7 @@ What is kept: the response only. It includes short excerpts of the CV (`skills.e
 
 ## Chat (PBL6-57)
 
-`POST /api/ai/chat` streams an answer as server-sent events (`token`, `jobs`, `error`, `done`); `stream: false` returns JSON. Replies come from **rules and templates**: intent by patterns (job search, CV, interview, greeting, help, off-topic), parameters (role, skills, city) by dictionaries, job hits from search-svc `GET /api/search/jobs`. No language model is called. Sessions: `POST /api/ai/session`, `GET /api/ai/session/{id}/history`, `DELETE /api/ai/session/{id}`; they are owned by the user, kept 24 h after the last message, and capped at 20 messages. Limit: 20 chat messages per user per hour (token bucket). Set `SEARCH_SERVICE_URL` (for example `http://search:5003`) or job search answers with an `error` event.
+`POST /api/ai/chat` streams an answer as server-sent events (`token`, `jobs`, `error`, `done`); `stream: false` returns JSON. Replies come from **rules and templates**: intent by patterns (job search, CV, interview, greeting, help, off-topic), parameters (role, skills, city) by dictionaries, job hits from search-svc `GET /api/search/jobs/semantic` (top 3 hits, query = the criteria text). No language model is called. Sessions: `POST /api/ai/session`, `GET /api/ai/session/{id}`, `GET /api/ai/session/{id}/history`, `DELETE /api/ai/session/{id}`; they are owned by the user, kept 24 h after the last message, and capped at 20 messages. Limit: 20 chat messages per user per hour (token bucket). Set `SEARCH_SERVICE_URL` (for example `http://search:5003`) or job search answers fail with an `error` event.
 
 ## Layout
 
@@ -53,10 +53,11 @@ What is kept: the response only. It includes short excerpts of the CV (`skills.e
 app/parsing    PDF (text layer + hidden-text filter, per-page OCR fallback), DOCX, content-based type detection
 app/nlp        normalise (NFC, fold), sections, skill taxonomy + sentence-scoped negation + "A or B" groups, years, education
 app/scoring    specs (CV/job views), scorer (explainable components), template suggestions
+app/chat       chat intents, rule-based replies over search-svc hits, sessions, SSE framing
 app/embed.py   ONNX embeddings (fastembed, multilingual MiniLM-L12-v2) + deterministic hashing fallback for tests
 data/          skills.yaml (taxonomy), model_params.json (fitted weights + calibration + score map)
 eval/          jobs, 5 760-pair label grid, blind labels (A/B + Haiku + Sonnet), run.py / fit_grid.py, REPORT.md
-tests/         79+ unit/API/robustness tests (no model download needed)
+tests/         370+ unit/API/robustness tests (no model download needed)
 ```
 
 ## Develop
