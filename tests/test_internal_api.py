@@ -68,8 +68,9 @@ def test_wrong_or_missing_credentials_are_401(client, headers):
     assert client.get("/api/internal/embed/info", headers=headers).status_code == 401
 
 
-def test_unconfigured_token_fails_closed_even_with_a_bearer_header():
-    with _client(FixedEmbedder(), token="") as c:
+@pytest.mark.parametrize("token", ["", "__SET_VIA_INFISICAL__"])
+def test_unconfigured_token_fails_closed_even_with_a_bearer_header(token):
+    with _client(FixedEmbedder(), token=token) as c:
         r = c.post("/api/internal/embed", json={"texts": ["a"]}, headers={"Authorization": "Bearer anything"})
         assert r.status_code == 401
         assert r.json()["code"] == "unauthorized"

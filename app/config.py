@@ -1,9 +1,13 @@
 """Runtime configuration. Everything comes from environment variables (no literals in code paths)."""
+import re
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import AliasChoices, Field
+from pydantic import AliasChoices, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# env templates ship __SET_VIA_INFISICAL__; a copied file must never turn that public literal into a working secret.
+_PLACEHOLDER_SECRET = re.compile(r"^__[A-Z][A-Z0-9_]*__$")
 
 
 class Settings(BaseSettings):
@@ -51,6 +55,12 @@ class Settings(BaseSettings):
     embedder_fallback: Literal["", "hashing"] = ""
     # Hard cap on the whole request body (multipart overhead is added on top of max_upload_bytes).
     max_body_slack_bytes: int = 64 * 1024
+
+    @field_validator("ai_internal_token_for_search", "ai_scoring_service_token")
+    @classmethod
+    def _placeholder_secret_is_unset(cls, value: str) -> str:
+        """Treat an env-template placeholder (__SET_VIA_INFISICAL__) exactly like an empty value."""
+        return "" if _PLACEHOLDER_SECRET.match(value.strip()) else value
 
 
 @lru_cache

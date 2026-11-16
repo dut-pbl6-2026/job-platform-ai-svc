@@ -133,6 +133,24 @@ def test_missing_search_key_is_allowed_in_development():
     validate_auth(Settings(jwt_metadata_address="", **DEV))  # internal endpoints then refuse every call (see test_internal_api)
 
 
+@pytest.mark.parametrize("placeholder", ["__SET_VIA_INFISICAL__", "__ANY_OTHER_KEY__", "  __SET_VIA_INFISICAL__  "])
+def test_placeholder_search_key_is_treated_as_unset(placeholder):
+    # An env template copied verbatim must not start the service with a publicly known token.
+    assert Settings(ai_internal_token_for_search=placeholder).ai_internal_token_for_search == ""
+    with pytest.raises(AuthConfigError, match="AI_INTERNAL_TOKEN_FOR_SEARCH is required"):
+        validate_auth(Settings(jwt_metadata_address=METADATA_URL, ai_internal_token_for_search=placeholder))
+
+
+def test_placeholder_scoring_key_is_treated_as_unset():
+    settings = Settings(
+        jwt_metadata_address=METADATA_URL,
+        ai_internal_token_for_search=INTERNAL,
+        ai_scoring_service_token="__SET_VIA_INFISICAL__",
+    )
+    assert settings.ai_scoring_service_token == ""
+    validate_auth(settings)  # the scoring key is optional; the placeholder does not satisfy it
+
+
 def test_short_search_key_refuses_to_start_outside_development():
     with pytest.raises(AuthConfigError, match="must be at least 32"):
         validate_auth(Settings(jwt_metadata_address=METADATA_URL, ai_internal_token_for_search="i" * 31))
