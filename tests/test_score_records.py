@@ -32,7 +32,7 @@ def client(settings, emb, stub, jobs):
 
 
 def as_user(user):
-    return {"X-User-Id": user}
+    return {"X-User-Id": user, "X-User-Role": "Recruiter"}
 
 
 def records(stub):

@@ -50,7 +50,7 @@ def client(settings, emb):
 
 
 def post(client, data, job_id=JOB_ID, name="cv.pdf", headers=None):
-    return client.post("/api/ai/score-resume", files={"cv_file": (name, data)}, data={"job_id": job_id}, headers={"X-User-Id": "u1", **(headers or {})})
+    return client.post("/api/ai/score-resume", files={"cv_file": (name, data)}, data={"job_id": job_id}, headers={"X-User-Id": "u1", "X-User-Role": "Recruiter", **(headers or {})})
 
 
 def test_cache_key_depends_on_model_and_params():
@@ -230,7 +230,7 @@ def test_concurrent_requests_are_safe(client):
 def test_lang_param_overrides_suggestion_language_and_cache(client):
     d = make_text_pdf(NURSE_CV)
     en = post(client, d).json()
-    r = client.post("/api/ai/score-resume", files={"cv_file": ("cv.pdf", d)}, data={"job_id": JOB_ID, "lang": "vi"}, headers={"X-User-Id": "u1"}).json()
+    r = client.post("/api/ai/score-resume", files={"cv_file": ("cv.pdf", d)}, data={"job_id": JOB_ID, "lang": "vi"}, headers={"X-User-Id": "u1", "X-User-Role": "Recruiter"}).json()
     assert r["meta"]["cached"] is False  # lang is part of the cache key
     assert any("Công việc" in s for s in r["suggestions"]) and not any("Công việc" in s for s in en["suggestions"])
 

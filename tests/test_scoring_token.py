@@ -37,8 +37,11 @@ def request(headers: dict[str, str] | None = None) -> Request:
     return Request({"type": "http", "method": "GET", "path": "/", "headers": raw, "query_string": b""})
 
 
-def user_token(sub: str = "alice") -> str:
-    return sign({"sub": sub, "iss": "job-platform", "aud": "job-platform", "exp": 4102444800})
+def user_token(sub: str = "alice", role: str | None = "Recruiter", role_claim: str = "role") -> str:
+    claims = {"sub": sub, "iss": "job-platform", "aud": "job-platform", "exp": 4102444800}
+    if role is not None:
+        claims[role_claim] = role
+    return sign(claims)
 
 
 # --- unit: startup policy ---------------------------------------------------
@@ -113,6 +116,59 @@ def test_scoring_route_still_accepts_a_user_jwt_as_a_normal_user():
     settings = Settings(jwt_metadata_address=METADATA_URL, ai_scoring_service_token=SCORING)
     caller = scoring_caller(request({"Authorization": f"Bearer {user_token('alice')}"}), settings)
     assert caller == Caller("alice", scoring_service=False)
+
+
+# --- unit: score-resume is recruiter/admin-only ------------------------------
+
+@pytest.mark.parametrize("role", ["Recruiter", "Admin", "recruiter", "ADMIN"])
+def test_scoring_route_accepts_recruiter_and_admin_user_jwts(role):
+    settings = Settings(jwt_metadata_address=METADATA_URL, ai_scoring_service_token=SCORING)
+    caller = scoring_caller(request({"Authorization": f"Bearer {user_token('alice', role=role)}"}), settings)
+    assert caller == Caller("alice", scoring_service=False)
+
+
+def test_scoring_route_accepts_the_aspnet_claim_types_role_uri():
+    settings = Settings(jwt_metadata_address=METADATA_URL, ai_scoring_service_token=SCORING)
+    token = user_token("alice", role="Recruiter",
+                       role_claim="http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
+    caller = scoring_caller(request({"Authorization": f"Bearer {token}"}), settings)
+    assert caller == Caller("alice", scoring_service=False)
+
+
+@pytest.mark.parametrize("role", ["User", "Candidate", ""])
+def test_scoring_route_refuses_a_candidate_with_403_forbidden(role):
+    settings = Settings(jwt_metadata_address=METADATA_URL, ai_scoring_service_token=SCORING)
+    headers = {"Authorization": f"Bearer {user_token('candidate', role=role)}"}
+    with pytest.raises(HTTPException) as info:
+        scoring_caller(request(headers), settings)
+    assert info.value.status_code == 403
+    assert info.value.detail["code"] == auth.FORBIDDEN_CODE == "forbidden"
+
+
+def test_scoring_route_refuses_a_user_jwt_with_no_role_claim():
+    settings = Settings(jwt_metadata_address=METADATA_URL, ai_scoring_service_token=SCORING)
+    headers = {"Authorization": f"Bearer {user_token('alice', role=None)}"}
+    with pytest.raises(HTTPException) as info:
+        scoring_caller(request(headers), settings)
+    assert info.value.status_code == 403
+    assert info.value.detail["code"] == "forbidden"
+
+
+def test_dev_auth_scoring_route_reads_x_user_role():
+    settings = Settings(ai_scoring_service_token=SCORING, **DEV)
+    assert scoring_caller(request({"X-User-Id": "alice", "X-User-Role": "Recruiter"}), settings) == Caller("alice")
+    assert scoring_caller(request({"X-User-Id": "bob", "X-User-Role": "Admin"}), settings) == Caller("bob")
+    with pytest.raises(HTTPException) as info:
+        scoring_caller(request({"X-User-Id": "candidate", "X-User-Role": "User"}), settings)
+    assert info.value.status_code == 403
+    assert info.value.detail["code"] == "forbidden"
+
+
+def test_dev_auth_scoring_route_refuses_a_missing_role_header():
+    settings = Settings(ai_scoring_service_token=SCORING, **DEV)
+    with pytest.raises(HTTPException) as info:
+        scoring_caller(request({"X-User-Id": "candidate"}), settings)
+    assert info.value.status_code == 403
 
 
 def test_a_user_whose_subject_is_the_scoring_name_is_not_the_scoring_service():
@@ -192,6 +248,21 @@ def test_a_real_user_is_capped_at_ten_per_minute(client):
     headers = {"Authorization": f"Bearer {user_token('alice')}"}
     codes = [score(client, headers, data).status_code for _ in range(11)]
     assert codes == [200] * 10 + [429]
+
+
+def test_a_candidate_gets_403_forbidden_from_the_score_route(client):
+    response = score(client, {"Authorization": f"Bearer {user_token('candidate', role='User')}"})
+
+    assert response.status_code == 403
+    assert response.json()["code"] == "forbidden"
+    assert response.headers["content-type"].startswith("application/problem+json")
+
+
+def test_a_recruiter_user_jwt_can_score(client):
+    response = score(client, {"Authorization": f"Bearer {user_token('recruiter', role='Recruiter')}"})
+
+    assert response.status_code == 200
+    assert "score_id" in response.json()
 
 
 def test_the_scoring_caller_does_not_consume_a_real_users_budget(client):

@@ -11,6 +11,8 @@ A failed key load is a 401 (fail closed) and is retried on the next request.
 
 Scoring service identity: app-svc scores applications in the background with AI_SCORING_SERVICE_TOKEN as a bearer.
 That token is accepted only by POST /api/ai/score-resume (`scoring_caller`); every other route refuses it (`current_user`).
+The scoring route also accepts a user identity, but only with role Recruiter or Admin: a candidate (role User or no
+role) gets 403 `forbidden`, because a match score is recruiter/admin-only.
 """
 import hashlib
 import hmac
@@ -30,6 +32,15 @@ MIN_SCORING_TOKEN_LENGTH = 32  # enforced in Production only
 MIN_INTERNAL_TOKEN_LENGTH = 32  # AI_INTERNAL_TOKEN_FOR_SEARCH, enforced in Production only
 SCORING_SUBJECT = "app-svc-scoring"
 DEVELOPMENT = "development"
+FORBIDDEN_CODE = "forbidden"
+# Roles that may obtain a match score. A candidate (role User) must never call the scoring route.
+SCORING_ROLES = frozenset({"recruiter", "admin"})
+# auth-svc issues the short JWT claim "role"; ASP.NET's ClaimTypes.Role is the ws/2008/06 URI. Accept both.
+ROLE_CLAIMS = (
+    "role",
+    "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
+    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role",
+)
 _BEARER = "bearer "
 _LOG = logging.getLogger("ai.auth")
 
@@ -131,8 +142,19 @@ def validate_auth(settings: Settings) -> None:
         )
 
 
-def current_user(request: Request, settings: Settings) -> str:
-    """User identity for every route except POST /api/ai/score-resume, which uses `scoring_caller`."""
+def _claim_role(claims: dict) -> str | None:
+    """Role from a verified JWT: the short `role` claim or an ASP.NET ClaimTypes.Role URI. First non-empty wins."""
+    for name in ROLE_CLAIMS:
+        value = claims.get(name)
+        if isinstance(value, list):
+            value = next((v for v in value if v), None)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return None
+
+
+def _user_identity(request: Request, settings: Settings) -> tuple[str, str | None]:
+    """Verified (user id, role) for a user identity. Raises 401 exactly like the previous `current_user`."""
     if is_scoring_token(request, settings):
         # the scoring token is a credential for one route only; it is never a user identity anywhere else
         raise HTTPException(401, detail={"code": "unauthorized", "title": "Invalid token"})
@@ -155,18 +177,40 @@ def current_user(request: Request, settings: Settings) -> str:
         uid = claims.get("sub") or claims.get("nameid") or claims.get("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
         if not uid:
             raise HTTPException(401, detail={"code": "unauthorized", "title": "Token has no subject"})
-        return str(uid)
+        return str(uid), _claim_role(claims)
     if not dev_auth_allowed(settings):
         # unreachable after validate_auth at startup; kept so that a bypassed validation still fails closed
         raise HTTPException(401, detail={"code": "unauthorized", "title": "Authentication is not configured"})
     uid = request.headers.get("x-user-id", "").strip()
     if not uid:
         raise HTTPException(401, detail={"code": "unauthorized", "title": "Missing X-User-Id (dev auth)"})
-    return uid
+    role = request.headers.get("x-user-role", "").strip() or None
+    return uid, role
+
+
+def current_user(request: Request, settings: Settings) -> str:
+    """User identity for every route except POST /api/ai/score-resume, which uses `scoring_caller`."""
+    return _user_identity(request, settings)[0]
 
 
 def scoring_caller(request: Request, settings: Settings) -> Caller:
-    """The score-resume route only: the scoring token (app-svc) or the normal user identity."""
+    """The score-resume route only: the scoring token (app-svc) or a Recruiter/Admin user identity.
+
+    A candidate is refused with 403 `forbidden`: the match score is recruiter/admin-only. The check is
+    keyed on how the caller authenticated, so the scoring token keeps working unchanged and a user JWT
+    cannot inherit its exemptions.
+    """
     if is_scoring_token(request, settings):
         return Caller(SCORING_SUBJECT, scoring_service=True)
-    return Caller(current_user(request, settings))
+
+    uid, role = _user_identity(request, settings)
+    if role is None or role.strip().lower() not in SCORING_ROLES:
+        raise HTTPException(
+            403,
+            detail={
+                "code": FORBIDDEN_CODE,
+                "title": "Forbidden",
+                "detail": "Resume scoring is available to Recruiter and Admin accounts only.",
+            },
+        )
+    return Caller(uid, scoring_service=False)
