@@ -62,7 +62,7 @@ def jwt_client(jwt_settings, emb):
 
 def bearer(sub: str = "alice") -> dict[str, str]:
 
-    token = sign({"sub": sub, "iss": "job-platform", "aud": "job-platform", "exp": 4102444800})
+    token = sign({"sub": sub, "role": "Recruiter", "iss": "job-platform", "aud": "job-platform", "exp": 4102444800})
     return {"Authorization": f"Bearer {token}"}
 
 
